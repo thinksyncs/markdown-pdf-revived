@@ -242,12 +242,18 @@ function convertMarkdownToHtml(filename, type, text) {
     };
   }
 
-  // toc
-  // https://github.com/leff/markdown-it-named-headers
-  var options = {
-    slugify: Slug
+  // math (KaTeX) - renders $...$ and $$...$$ locally, no external server
+  var math_f = setBooleanValue(matterParts.data.math, vscode.workspace.getConfiguration('markdown-pdf')['math']);
+  if (math_f) {
+    md.use(markdownItKaTeX);
   }
-  md.use(require('markdown-it-named-headers'), options);
+
+  // toc / heading anchors
+  // https://github.com/valeriangalliat/markdown-it-anchor
+  md.use(require('markdown-it-anchor'), {
+    slugify: Slug,
+    permalink: false
+  });
 
   // markdown-it-container
   // https://github.com/markdown-it/markdown-it-container
@@ -285,6 +291,77 @@ function convertMarkdownToHtml(filename, type, text) {
 }
 
 /*
+ * Minimal KaTeX plugin for markdown-it.
+ * Uses the katex package directly to avoid bundling third-party plugins
+ * with their own pinned (potentially vulnerable) katex versions.
+ * Supports: $...$ (inline) and $$...$$ (block/display) math.
+ */
+function markdownItKaTeX(md) {
+  var katex = require('katex');
+
+  // Inline math: $...$
+  md.inline.ruler.before('escape', 'math_inline', function (state, silent) {
+    var src = state.src;
+    var start = state.pos;
+    if (src[start] !== '$' || src[start + 1] === '$') return false;
+    var end = src.indexOf('$', start + 1);
+    if (end === -1) return false;
+    if (!silent) {
+      var token = state.push('math_inline', '', 0);
+      token.markup = '$';
+      token.content = src.slice(start + 1, end);
+    }
+    state.pos = end + 1;
+    return true;
+  });
+
+  // Block math: $$...$$
+  md.block.ruler.before('fence', 'math_block', function (state, startLine, endLine, silent) {
+    var pos = state.bMarks[startLine] + state.tShift[startLine];
+    var max = state.eMarks[startLine];
+    if (max - pos < 2 || state.src.slice(pos, pos + 2) !== '$$') return false;
+    var firstLineContent = state.src.slice(pos + 2, max).trim();
+    var found = false;
+    var nextLine = startLine;
+    while (nextLine < endLine) {
+      nextLine++;
+      pos = state.bMarks[nextLine] + state.tShift[nextLine];
+      max = state.eMarks[nextLine];
+      if (max - pos >= 2 && state.src.slice(pos, pos + 2) === '$$') {
+        found = true;
+        break;
+      }
+    }
+    if (!found) return false;
+    if (silent) return true;
+    var blockContent = state.getLines(startLine + 1, nextLine, 0, true).trim();
+    if (firstLineContent) blockContent = firstLineContent + '\n' + blockContent;
+    var token = state.push('math_block', '', 0);
+    token.block = true;
+    token.markup = '$$';
+    token.content = blockContent;
+    state.line = nextLine + 1;
+    return true;
+  });
+
+  md.renderer.rules.math_inline = function (tokens, idx) {
+    try {
+      return katex.renderToString(tokens[idx].content, { throwOnError: false });
+    } catch (e) {
+      return tokens[idx].content;
+    }
+  };
+
+  md.renderer.rules.math_block = function (tokens, idx) {
+    try {
+      return '<p>' + katex.renderToString(tokens[idx].content, { throwOnError: false, displayMode: true }) + '</p>\n';
+    } catch (e) {
+      return '<p>' + tokens[idx].content + '</p>\n';
+    }
+  };
+}
+
+/*
  * https://github.com/microsoft/vscode/blob/ca4ceeb87d4ff935c52a7af0671ed9779657e7bd/extensions/markdown-language-features/src/slugify.ts#L26
  */
 function Slug(string) {
@@ -319,9 +396,10 @@ function makeHtml(data, uri) {
     var filename = path.join(__dirname, 'template', 'template.html');
     var template = readFile(filename);
 
-    // read mermaid javascripts
-    var mermaidServer = vscode.workspace.getConfiguration('markdown-pdf')['mermaidServer'] || '';
-    var mermaid = '<script src=\"' + mermaidServer + '\"></script>';
+    // inline mermaid locally (offline, no CDN)
+    var mermaidPath = path.join(__dirname, 'node_modules', 'mermaid', 'dist', 'mermaid.min.js');
+    var mermaidContent = readFile(mermaidPath);
+    var mermaid = mermaidContent ? '<script>' + mermaidContent + '</script>' : '';
 
     // compile template
     var mustache = require('mustache');
@@ -385,12 +463,26 @@ function exportPdf(data, filename, type, uri) {
         var f = path.parse(filename);
         var tmpfilename = path.join(f.dir, f.name + '_tmp.html');
         exportHtml(data, tmpfilename);
+
+        // resolve executable path: user setting → detected system Chrome
+        var configuredPath = vscode.workspace.getConfiguration('markdown-pdf')['executablePath'] || '';
+        var resolvedExecPath = configuredPath;
+        if (!resolvedExecPath || !isExistsPath(resolvedExecPath)) {
+          var defaultPaths = getChromiumDefaultPaths();
+          for (var j = 0; j < defaultPaths.length; j++) {
+            if (isExistsPath(defaultPaths[j])) {
+              resolvedExecPath = defaultPaths[j];
+              break;
+            }
+          }
+        }
+
         var options = {
-          executablePath: vscode.workspace.getConfiguration('markdown-pdf')['executablePath'] || puppeteer.executablePath(),
-          args: ['--lang='+vscode.env.language, '--no-sandbox', '--disable-setuid-sandbox']
+          executablePath: resolvedExecPath,
+          args: ['--lang=' + vscode.env.language, '--no-sandbox', '--disable-setuid-sandbox']
           // Setting Up Chrome Linux Sandbox
           // https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md#setting-up-chrome-linux-sandbox
-      };
+        };
         const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
         await page.setDefaultTimeout(0);
@@ -654,7 +746,14 @@ function readStyles(uri) {
       }
     }
 
-    // 3. read the style of the highlight.js.
+    // 3. read KaTeX styles (linked, not inlined, so font paths resolve correctly)
+    var isMath = vscode.workspace.getConfiguration('markdown-pdf')['math'];
+    if (isMath) {
+      var katexCssPath = path.join(__dirname, 'node_modules', 'katex', 'dist', 'katex.min.css');
+      style += '<link rel="stylesheet" href="' + vscode.Uri.file(katexCssPath).toString() + '">';
+    }
+
+    // 4. read the style of the highlight.js.
     var highlightStyle = vscode.workspace.getConfiguration('markdown-pdf')['highlightStyle'] || '';
     var ishighlight = vscode.workspace.getConfiguration('markdown-pdf')['highlight'];
     if (ishighlight) {
@@ -668,13 +767,13 @@ function readStyles(uri) {
       }
     }
 
-    // 4. read the style of the markdown-pdf.
+    // 5. read the style of the markdown-pdf.
     if (includeDefaultStyles) {
       filename = path.join(__dirname, 'styles', 'markdown-pdf.css');
       style += makeCss(filename);
     }
 
-    // 5. read the style of the markdown-pdf.styles settings.
+    // 6. read the style of the markdown-pdf.styles settings.
     styles = vscode.workspace.getConfiguration('markdown-pdf')['styles'] || '';
     if (styles && Array.isArray(styles) && styles.length > 0) {
       for (i = 0; i < styles.length; i++) {
@@ -732,81 +831,51 @@ function fixHref(resource, href) {
   }
 }
 
+function getChromiumDefaultPaths() {
+  if (process.platform === 'win32') {
+    return [
+      process.env.LOCALAPPDATA + '\\Google\\Chrome\\Application\\chrome.exe',
+      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+      'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+      process.env.LOCALAPPDATA + '\\Chromium\\Application\\chrome.exe',
+    ];
+  } else if (process.platform === 'darwin') {
+    return [
+      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    ];
+  } else {
+    return [
+      '/usr/bin/google-chrome',
+      '/usr/bin/google-chrome-stable',
+      '/usr/bin/chromium-browser',
+      '/usr/bin/chromium',
+      '/snap/bin/chromium',
+    ];
+  }
+}
+
 function checkPuppeteerBinary() {
   try {
-    // settings.json
-    var executablePath = vscode.workspace.getConfiguration('markdown-pdf')['executablePath'] || ''
-    if (isExistsPath(executablePath)) {
+    // 1. user-configured path (settings.json)
+    var executablePath = vscode.workspace.getConfiguration('markdown-pdf')['executablePath'] || '';
+    if (executablePath && isExistsPath(executablePath)) {
       INSTALL_CHECK = true;
       return true;
     }
 
-    // bundled Chromium
-    const puppeteer = require('puppeteer-core');
-    executablePath = puppeteer.executablePath();
-    if (isExistsPath(executablePath)) {
-      return true;
-    } else {
-      return false;
-    }
-  } catch (error) {
-    showErrorMessage('checkPuppeteerBinary()', error);
-  }
-}
-
-/*
- * puppeteer install.js
- * https://github.com/GoogleChrome/puppeteer/blob/master/install.js
- */
-function installChromium() {
-  try {
-    vscode.window.showInformationMessage('[Markdown PDF] Installing Chromium ...');
-    var statusbarmessage = vscode.window.setStatusBarMessage('$(markdown) Installing Chromium ...');
-
-    // proxy setting
-    setProxy();
-
-    var StatusbarMessageTimeout = vscode.workspace.getConfiguration('markdown-pdf')['StatusbarMessageTimeout'];
-    const puppeteer = require('puppeteer-core');
-    const browserFetcher = puppeteer.createBrowserFetcher();
-    const revision = require(path.join(__dirname, 'node_modules', 'puppeteer-core', 'package.json')).puppeteer.chromium_revision;
-    const revisionInfo = browserFetcher.revisionInfo(revision);
-
-    // download Chromium
-    browserFetcher.download(revisionInfo.revision, onProgress)
-      .then(() => browserFetcher.localRevisions())
-      .then(onSuccess)
-      .catch(onError);
-
-    function onSuccess(localRevisions) {
-      console.log('Chromium downloaded to ' + revisionInfo.folderPath);
-      localRevisions = localRevisions.filter(revision => revision !== revisionInfo.revision);
-      // Remove previous chromium revisions.
-      const cleanupOldVersions = localRevisions.map(revision => browserFetcher.remove(revision));
-
-      if (checkPuppeteerBinary()) {
+    // 2. common system Chrome/Chromium locations
+    var defaultPaths = getChromiumDefaultPaths();
+    for (var i = 0; i < defaultPaths.length; i++) {
+      if (isExistsPath(defaultPaths[i])) {
         INSTALL_CHECK = true;
-        statusbarmessage.dispose();
-        vscode.window.setStatusBarMessage('$(markdown) Chromium installation succeeded!', StatusbarMessageTimeout);
-        vscode.window.showInformationMessage('[Markdown PDF] Chromium installation succeeded.');
-        return Promise.all(cleanupOldVersions);
+        return true;
       }
     }
 
-    function onError(error) {
-      statusbarmessage.dispose();
-      vscode.window.setStatusBarMessage('$(markdown) ERROR: Failed to download Chromium!', StatusbarMessageTimeout);
-      showErrorMessage('Failed to download Chromium! \
-        If you are behind a proxy, set the http.proxy option to settings.json and restart Visual Studio Code. \
-        See https://github.com/yzane/vscode-markdown-pdf#install', error);
-    }
-
-    function onProgress(downloadedBytes, totalBytes) {
-      var progress = parseInt(downloadedBytes / totalBytes * 100);
-      vscode.window.setStatusBarMessage('$(markdown) Installing Chromium ' + progress + '%' , StatusbarMessageTimeout);
-    }
+    return false;
   } catch (error) {
-    showErrorMessage('installChromium()', error);
+    showErrorMessage('checkPuppeteerBinary()', error);
   }
 }
 
@@ -840,7 +909,10 @@ function init() {
     if (checkPuppeteerBinary()) {
       INSTALL_CHECK = true;
     } else {
-      installChromium();
+      vscode.window.showErrorMessage(
+        '[Markdown PDF] Chrome or Chromium not found. ' +
+        'Please install Google Chrome, or set markdown-pdf.executablePath in settings to your browser path.'
+      );
     }
   } catch (error) {
     showErrorMessage('init()', error);

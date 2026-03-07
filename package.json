@@ -6,7 +6,7 @@
   "publisher": "yzane",
   "icon": "images/icon.png",
   "engines": {
-    "vscode": "^1.0.0"
+    "vscode": "^1.85.0"
   },
   "categories": [
     "Other"
@@ -24,10 +24,6 @@
     "url": "https://github.com/yzane/vscode-markdown-pdf.git"
   },
   "activationEvents": [
-    "onCommand:extension.markdown-pdf.settings",
-    "onCommand:extension.markdown-pdf.pdf",
-    "onCommand:extension.markdown-pdf.html",
-    "onCommand:extension.markdown-pdf.all",
     "onLanguage:markdown"
   ],
   "main": "./extension",
@@ -116,7 +112,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Output format: pdf, html. Multiple output formats support"
+          "description": "Output format: pdf, html. Supports multiple output formats."
         },
         "markdown-pdf.convertOnSave": {
           "type": "boolean",
@@ -391,10 +387,10 @@
           "default": true,
           "description": "Enable markdown-it-include. "
         },
-        "markdown-pdf.mermaidServer": {
-          "type": "string",
-          "default": "https://unpkg.com/mermaid/dist/mermaid.min.js",
-          "description": "mermaid server."
+        "markdown-pdf.math": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enable KaTeX math rendering. Use `$...$` for inline math and `$$...$$` for display math."
         }
       }
     }
@@ -404,25 +400,27 @@
     "test": "node ./test/runTest.js"
   },
   "devDependencies": {
-    "glob": "^7.1.6",
-    "mocha": "^7.1.1",
-    "removeNPMAbsolutePaths": "^2.0.0",
-    "vscode-test": "^1.3.0"
+    "@vscode/test-electron": "^2.5.2",
+    "glob": "^13.0.6",
+    "mocha": "^11.7.5",
+    "removeNPMAbsolutePaths": "^2.0.0"
   },
   "dependencies": {
-    "cheerio": "^0.20.0",
+    "cheerio": "^1.0.0",
     "emoji-images": "^0.1.1",
-    "gray-matter": "^4.0.2",
-    "highlight.js": "^9.18.1",
-    "markdown-it": "^10.0.0",
+    "gray-matter": "^4.0.3",
+    "highlight.js": "^11.11.1",
+    "katex": "^0.16.37",
+    "markdown-it": "^14.1.1",
     "markdown-it-checkbox": "^1.1.0",
-    "markdown-it-container": "^2.0.0",
-    "markdown-it-emoji": "^1.4.0",
-    "markdown-it-include": "^1.1.0",
-    "markdown-it-named-headers": "0.0.4",
-    "mkdirp": "^1.0.3",
-    "mustache": "^4.0.1",
-    "puppeteer-core": "^2.1.1",
-    "rimraf": "^3.0.2"
+    "markdown-it-container": "^4.0.0",
+    "markdown-it-emoji": "^3.0.0",
+    "markdown-it-include": "^2.0.0",
+    "markdown-it-anchor": "^9.2.0",
+    "mermaid": "^11.12.3",
+    "mkdirp": "^3.0.1",
+    "mustache": "^4.2.0",
+    "puppeteer-core": "^24.38.0",
+    "rimraf": "^6.1.3"
   }
 }
