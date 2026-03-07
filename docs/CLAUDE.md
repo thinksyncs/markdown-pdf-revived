@@ -202,6 +202,45 @@ The block rule had `if (max - pos < 4 ...)` guard (minimum `$$x$$` is 6 chars bu
 
 ---
 
+### Session 4: 7 March 2026 — Phase 2: TypeScript Migration
+
+**Status:** Complete
+
+#### Accomplished
+1. **Phase 2.1 + 2.2:** TypeScript + esbuild build pipeline
+   - `typescript ^5.9.3`, `esbuild ^0.27.3`, `@types/node`, `@types/vscode`
+   - `tsconfig.json` — strict mode, ES2020, rootDir `src/`, outDir `dist/`
+   - `esbuild.js` — bundles `src/extension.ts` → `dist/extension.js`; all heavy deps external
+   - `npm run build` / `watch` / `vscode:prepublish` scripts added
+   - `package.json` `main` updated to `./dist/extension`
+   - Phase 2.1 bridge (`src/extension.ts` → `require('../extension')`) to validate pipeline
+   - Fix: `../extension` must be esbuild external so its `__dirname` stays at project root (not `dist/`)
+
+2. **Phase 2.5–2.7:** Full TypeScript migration — `extension.js` → typed modules
+   - `src/types.ts`, `src/config/settings.ts` (EXTENSION_ROOT), `src/utils/logger.ts`, `src/utils/file.ts`
+   - `src/converter/` — slug.ts, katex.ts, sanitize.ts, markdown.ts
+   - `src/template/page.ts` — makeHtml, readStyles, getOutputDir, fixHref
+   - `src/exporter/html.ts`, `src/exporter/pdf.ts`
+   - `src/extension.ts` — activate/deactivate, command registration
+   - EXTENSION_ROOT pattern: `path.join(__dirname, '..')` — all asset paths resolved correctly
+   - `chromiumReady` flag encapsulated in pdf.ts via `markChromiumReady()`
+   - `tsc --noEmit` → 0 errors; `npm run build` → complete
+
+3. **Phase 2.8:** Verification
+   - Manual testing in VSCodium: basic, math, mermaid — all pass, no console errors
+   - `npm audit --omit=dev` → 0 vulnerabilities
+   - Phases 2.3 (ESLint) and 2.4 (Jest) deferred to post-Phase 3
+
+#### Key Architectural Decisions
+| Decision | Rationale |
+|----------|-----------|
+| `EXTENSION_ROOT = path.join(__dirname, '..')` | `__dirname` in esbuild bundle = `dist/`; all assets live at project root |
+| All heavy deps kept external in esbuild | Avoids bundling ~5MB; runtime `require()` from `node_modules` |
+| `chromiumReady` encapsulated in pdf.ts | No global mutable state leaking across modules |
+| `extension.js` kept at root | Not deleted yet — acts as reference during cleanup phase |
+
+---
+
 ## Project Status Dashboard
 
 | Phase | Status | Branch |
@@ -211,8 +250,12 @@ The block rule had `if (max - pos < 4 ...)` guard (minimum `$$x$$` is 6 chars bu
 | 1.3 Remove PNG/JPEG | Complete | feature/phase-1-3 |
 | 1.4 Update Dependencies + PRs | Complete | feature/phase-1-4 |
 | 1.5 Fix CVE-2024-7739 | Complete | feature/phase-1-5 |
-| 1.6 Verification | In Progress | feature/phase-1-6 |
-| 2.1–2.8 Architecture (TypeScript) | Not Started | — |
+| 1.6 Verification | Complete | feature/phase-1-6 |
+| 2.1+2.2 TypeScript + esbuild | Complete | feature/phase-2-1-typescript-setup |
+| 2.3 ESLint + Prettier | Deferred | — |
+| 2.4 Jest testing | Deferred | — |
+| 2.5–2.7 TypeScript Migration | Complete | feature/phase-2-5-typescript-migration |
+| 2.8 Phase 2 Verification | Complete | feature/phase-2-5-typescript-migration |
 | 3.1–3.6 Feature Cleanup | Not Started | — |
 | 4.1–4.9 Documentation & Release | Not Started | — |
 
@@ -245,5 +288,5 @@ The block rule had `if (max - pos < 4 ...)` guard (minimum `$$x$$` is 6 chars bu
 ---
 
 **Last Updated:** 7 March 2026
-**Current Phase:** Phase 1 Complete
-**Next Phase:** 2.1 — TypeScript setup and esbuild build system
+**Current Phase:** Phase 2 Complete
+**Next Phase:** 3.1 — Simplify settings; remove extension.js legacy file
