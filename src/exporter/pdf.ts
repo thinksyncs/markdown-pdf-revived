@@ -109,7 +109,7 @@ export async function exportPdf(
         });
         const page = await browser.newPage();
         await page.setDefaultTimeout(0);
-        await page.goto(vscode.Uri.file(tmpfilename).toString(), { waitUntil: 'networkidle0' });
+        await page.goto(vscode.Uri.file(tmpfilename).toString(), { waitUntil: 'networkidle0', timeout: config.timeout(uri) });
 
         // PR #399: wait for Mermaid async SVG rendering before PDF capture.
         // The callbacks run in the browser context — document is available there.
@@ -120,7 +120,7 @@ export async function exportPdf(
         if (hasMermaid) {
           await page.waitForFunction(
             '() => document.querySelectorAll(".mermaid:not([data-processed])").length === 0',
-            { timeout: 10000 }
+            { timeout: config.timeout(uri) }
           ).catch(() => { /* timeout — best-effort render */ });
         }
 
@@ -137,7 +137,7 @@ export async function exportPdf(
             landscape: config.orientation(uri) === 'landscape',
             format: config.format(uri) as 'A4',
             margin: { top: margin.top || undefined, right: margin.right || undefined, bottom: margin.bottom || undefined, left: margin.left || undefined },
-            timeout: 0,
+            timeout: config.timeout(uri),
           });
         }
 

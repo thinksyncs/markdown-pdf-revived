@@ -36,6 +36,7 @@ export const config = {
     const m = pdf(resource).get<Record<string, string>>('margin') ?? {};
     return { top: m['top'] ?? '2cm', right: m['right'] ?? '2.5cm', bottom: m['bottom'] ?? '2cm', left: m['left'] ?? '2.5cm' };
   },
+  timeout: (resource?: vscode.Uri): number => pdf(resource).get<number>('timeout') ?? 60000,
   markdownStyles: (): string[] => md().get<string[]>('styles') ?? [],
   homedir: (): string => os.homedir(),
 };

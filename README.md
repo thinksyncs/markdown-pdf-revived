@@ -112,6 +112,7 @@ To exclude specific files from auto-convert, add filename patterns to `markdown-
 | `markdown-pdf.margin.bottom` | `"2cm"` | Bottom margin. Units: mm, cm, in, px. |
 | `markdown-pdf.margin.right` | `"2.5cm"` | Right margin. Units: mm, cm, in, px. |
 | `markdown-pdf.margin.left` | `"2.5cm"` | Left margin. Units: mm, cm, in, px. |
+| `markdown-pdf.timeout` | `60000` | Timeout in milliseconds for PDF export. Increase for large documents or slow machines. |
 
 Header and footer templates support these tokens:
 

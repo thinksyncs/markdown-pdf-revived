@@ -343,6 +343,11 @@
           "type": "boolean",
           "default": true,
           "markdownDescription": "Enable KaTeX math rendering. Use `$...$` for inline math and `$$...$$` for display math."
+        },
+        "markdown-pdf.timeout": {
+          "type": "number",
+          "default": 60000,
+          "description": "Timeout in milliseconds for PDF export. Increase for large documents or slow machines."
         }
       }
     }
