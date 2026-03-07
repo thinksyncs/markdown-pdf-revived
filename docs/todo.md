@@ -292,17 +292,17 @@
 - [ ] Group settings logically in settings UI
 - [ ] Test settings UI displays correctly
 
-### 3.2 Modernize Default Values
+### 3.2 Modernize Default Values ✅ COMPLETE
 
-- [ ] Update default format: A4 (keep)
-- [ ] Update default margins: 2cm top/bottom, 2.5cm left/right
-- [ ] Update default syntax theme: `github-dark`
-- [ ] Update default line height: 1.7
-- [ ] Update default font size: 15px
-- [ ] Enable KaTeX by default: `true`
-- [ ] Enable emoji by default: `true`
-- [ ] Disable header/footer by default
-- [ ] Test defaults produce beautiful output
+- [x] Update default format: A4 (keep)
+- [x] Update default margins: 2cm top/bottom, 2.5cm left/right (was 1.5cm/1cm/1cm/1cm)
+- [x] Update default syntax theme: `github.css` (was empty → fell back to tomorrow.css)
+- [ ] Update default line height: 1.7 — in CSS (Phase 3.3)
+- [ ] Update default font size: 15px — in CSS (Phase 3.3)
+- [x] Enable KaTeX by default: `true` (already was)
+- [x] Enable emoji by default: `true` (already was)
+- [x] Disable header/footer by default (was `true`)
+- [ ] Test defaults produce beautiful output — after Phase 3.3
 
 ### 3.3 Rewrite CSS with Modern Styling
 

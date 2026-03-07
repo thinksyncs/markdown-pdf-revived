@@ -21,12 +21,12 @@ export const config = {
   outputDirectory: (): string => pdf().get<string>('outputDirectory') ?? '',
   styles: (resource?: vscode.Uri): string[] => pdf(resource).get<string[]>('styles') ?? [],
   highlight: (): boolean => pdf().get<boolean>('highlight') ?? true,
-  highlightStyle: (): string => pdf().get<string>('highlightStyle') ?? '',
+  highlightStyle: (): string => pdf().get<string>('highlightStyle') ?? 'github.css',
   breaks: (): boolean => pdf().get<boolean>('breaks') ?? false,
   emoji: (): boolean => pdf().get<boolean>('emoji') ?? true,
   math: (): boolean => pdf().get<boolean>('math') ?? true,
   executablePath: (): string => pdf().get<string>('executablePath') ?? '',
-  displayHeaderFooter: (resource?: vscode.Uri): boolean => pdf(resource).get<boolean>('displayHeaderFooter') ?? true,
+  displayHeaderFooter: (resource?: vscode.Uri): boolean => pdf(resource).get<boolean>('displayHeaderFooter') ?? false,
   headerTemplate: (resource?: vscode.Uri): string => pdf(resource).get<string>('headerTemplate') ?? '',
   footerTemplate: (resource?: vscode.Uri): string => pdf(resource).get<string>('footerTemplate') ?? '',
   printBackground: (resource?: vscode.Uri): boolean => pdf(resource).get<boolean>('printBackground') ?? true,
@@ -34,7 +34,7 @@ export const config = {
   format: (resource?: vscode.Uri): string => pdf(resource).get<string>('format') ?? 'A4',
   margin: (resource?: vscode.Uri) => {
     const m = pdf(resource).get<Record<string, string>>('margin') ?? {};
-    return { top: m['top'] ?? '', right: m['right'] ?? '', bottom: m['bottom'] ?? '', left: m['left'] ?? '' };
+    return { top: m['top'] ?? '2cm', right: m['right'] ?? '2.5cm', bottom: m['bottom'] ?? '2cm', left: m['left'] ?? '2.5cm' };
   },
   markdownStyles: (): string[] => md().get<string[]>('styles') ?? [],
   homedir: (): string => os.homedir(),

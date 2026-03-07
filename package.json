@@ -236,7 +236,7 @@
             "xt256.css",
             "zenburn.css"
           ],
-          "default": "",
+          "default": "github.css",
           "markdownDescription": "Set the style file name. [highlight.js demo](https://highlightjs.org/static/demo/) [highlight.js/src/styles](https://github.com/highlightjs/highlight.js/tree/master/src/styles)"
         },
         "markdown-pdf.breaks": {
@@ -256,7 +256,7 @@
         },
         "markdown-pdf.displayHeaderFooter": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "pdf only. Display header and footer.",
           "scope": "resource"
         },
@@ -309,26 +309,26 @@
         },
         "markdown-pdf.margin.top": {
           "type": "string",
-          "default": "1.5cm",
-          "description": "Page Option. Border Top. units: mm, cm, in, px",
+          "default": "2cm",
+          "description": "Page margin top. Units: mm, cm, in, px",
           "scope": "resource"
         },
         "markdown-pdf.margin.bottom": {
           "type": "string",
-          "default": "1cm",
-          "description": "Page Option. Border bottom. units: mm, cm, in, px",
+          "default": "2cm",
+          "description": "Page margin bottom. Units: mm, cm, in, px",
           "scope": "resource"
         },
         "markdown-pdf.margin.right": {
           "type": "string",
-          "default": "1cm",
-          "description": "Page Option. Border right. units: mm, cm, in, px",
+          "default": "2.5cm",
+          "description": "Page margin right. Units: mm, cm, in, px",
           "scope": "resource"
         },
         "markdown-pdf.margin.left": {
           "type": "string",
-          "default": "1cm",
-          "description": "Page Option. Border left. units: mm, cm, in, px",
+          "default": "2.5cm",
+          "description": "Page margin left. Units: mm, cm, in, px",
           "scope": "resource"
         },
         "markdown-pdf.math": {
