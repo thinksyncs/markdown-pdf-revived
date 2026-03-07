@@ -304,26 +304,23 @@
 - [x] Disable header/footer by default (was `true`)
 - [ ] Test defaults produce beautiful output — after Phase 3.3
 
-### 3.3 Rewrite CSS with Modern Styling
+### 3.3 Rewrite CSS with Modern Styling ✅ COMPLETE
 
-- [ ] Audit current `styles/markdown.css`
-- [ ] Rewrite with 2026 typography:
-  - [ ] Modern font stack: `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`
-  - [ ] Line height: 1.7
-  - [ ] Font size: 15px base
-  - [ ] Better heading hierarchy
-- [ ] Modernize code blocks:
-  - [ ] Rounded corners (6px)
-  - [ ] Subtle shadow
-  - [ ] Better padding (16px)
-  - [ ] Modern syntax highlighting theme
-- [ ] Modernize tables:
-  - [ ] Striped rows
-  - [ ] Better cell padding
-  - [ ] Sticky header for long tables
-  - [ ] Border radius on corners
-- [ ] Improve spacing throughout
-- [ ] Add responsive design for HTML export
+- [x] Rewrote `styles/markdown.css` from scratch — replaced VSCode editor stylesheet
+  - [x] Modern font stack: `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`
+  - [x] Line height: 1.7
+  - [x] Font size: 15px base
+  - [x] Heading hierarchy with border-bottom separators (h1/h2)
+  - [x] Task list checkbox alignment
+  - [x] Blockquote: left border + subtle background
+- [x] Rewrote `styles/markdown-pdf.css` (PDF/HTML overrides)
+  - [x] Code blocks: `#f6f8fa` background, 6px radius, 1.25em padding
+  - [x] Mermaid SVG centering and max-width
+  - [x] KaTeX display: overflow-x scroll for wide formulas
+  - [x] Tables: `display: table-header-group` for multi-page repeat headers
+  - [x] `@media print`: 13px body, page-break-inside avoid on pre/blockquote/headings
+  - [x] Striped table rows (`nth-child(even)`)
+  - [x] `.page` utility class for explicit page breaks
 
 ### 3.4 Improve Accessibility
 

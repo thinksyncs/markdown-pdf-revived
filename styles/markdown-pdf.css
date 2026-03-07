@@ -1,48 +1,97 @@
-/*
- * Markdown PDF CSS
- */
+/* Markdown PDF (Revived) — PDF/HTML Export Overrides
+   Applied after markdown.css and the syntax highlight theme.
+   Handles code block chrome, print tweaks, and page breaks. */
 
- body {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
-	padding: 0 12px;
+/* ── Code Blocks (hljs) ──────────────────────────────────────── */
+
+pre.hljs {
+  padding: 1.1em 1.25em;
+  background: #f6f8fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.55;
+  margin-bottom: 1.5em;
 }
 
-pre {
-	background-color: #f8f8f8;
-	border: 1px solid #cccccc;
-	border-radius: 3px;
-	overflow-x: auto;
-	white-space: pre-wrap;
-	overflow-wrap: break-word;
+pre.hljs code > div {
+  /* highlight.js wraps output in a div — keep it clean */
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
 }
 
-pre:not(.hljs) {
-	padding: 23px;
-	line-height: 19px;
+/* ── Mermaid Diagrams ────────────────────────────────────────── */
+
+.mermaid {
+  text-align: center;
+  margin: 1.5em 0;
 }
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── KaTeX Math ──────────────────────────────────────────────── */
+
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5em 0;
+  margin: 1em 0;
+}
+
+/* ── Blockquote (PDF-specific refinement) ────────────────────── */
 
 blockquote {
-	background: rgba(127, 127, 127, 0.1);
-	border-color: rgba(0, 122, 204, 0.5);
+  page-break-inside: avoid;
 }
 
-.emoji {
-	height: 1.4em;
+/* ── Tables (print) ──────────────────────────────────────────── */
+
+table {
+  page-break-inside: auto;
 }
 
-code {
-	font-size: 14px;
-	line-height: 19px;
+thead {
+  display: table-header-group;
 }
 
-/* for inline code */
-:not(pre):not(.hljs) > code {
-	color: #C9AE75; /* Change the old color so it seems less like an error */
-	font-size: inherit;
+tr {
+  page-break-inside: avoid;
 }
 
-/* Page Break : use <div class="page"/> to insert page break
--------------------------------------------------------- */
+/* ── Page Break Utility ──────────────────────────────────────── */
+
 .page {
-	page-break-after: always;
+  page-break-after: always;
+}
+
+/* ── Print Media ─────────────────────────────────────────────── */
+
+@media print {
+  body {
+    font-size: 13px;
+  }
+
+  a {
+    color: #1a1a1a;
+    text-decoration: none;
+  }
+
+  pre.hljs {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+
+  pre, blockquote {
+    page-break-inside: avoid;
+  }
 }
