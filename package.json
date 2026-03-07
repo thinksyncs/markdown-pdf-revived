@@ -6,6 +6,10 @@
   "publisher": "AUAggy",
   "author": "AUAggy",
   "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#111827",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
