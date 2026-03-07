@@ -16,6 +16,9 @@ const options = {
   outfile: 'dist/extension.js',
   external: [
     'vscode',
+    // Bridge: keep legacy extension.js external so its __dirname resolves to
+    // the project root (not dist/). Removed when Phase 2.5 TS migration is done.
+    '../extension',
     // Large deps loaded at runtime via require() — keep external so
     // node_modules are used directly (avoids bundling ~5MB into dist)
     'puppeteer-core',
