@@ -20,7 +20,7 @@ This is a fork of [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-ma
 
 **Removed:** PlantUML (sent source to plantuml.com), PNG/JPEG export, Chromium auto-download, 10 settings.
 
-**Added:** KaTeX math, DOMPurify sanitization (CVE-2024-7739), Mermaid async render fix, TypeScript rewrite.
+**Added:** KaTeX math, DOMPurify sanitization (CVE-2024-7739), Mermaid async render fix, TypeScript rewrite, esbuild bundling (extension package: ~16MB, down from 60MB).
 
 **Changed:** Default margins, highlight theme (github.css), header/footer off by default.
 
@@ -66,6 +66,7 @@ To exclude specific files from auto-convert, add filename patterns to `markdown-
 - File includes via [markdown-it-include](https://github.com/camelaissani/markdown-it-include)
 - Custom div containers via [markdown-it-container](https://github.com/markdown-it/markdown-it-container)
 - Checkbox and task list support via [markdown-it-checkbox](https://github.com/mcecot/markdown-it-checkbox)
+- Footnotes via `[^1]` syntax
 - DOMPurify sanitization of rendered HTML before PDF/HTML output
 
 ## Settings

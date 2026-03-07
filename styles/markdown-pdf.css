@@ -72,6 +72,18 @@ tr {
 
 /* ── Print Media ─────────────────────────────────────────────── */
 
+/* Footnotes */
+.footnotes {
+  border-top: 1px solid #e1e4e8;
+  margin-top: 2em;
+  padding-top: 1em;
+  font-size: 0.875em;
+  color: #57606a;
+}
+.footnotes ol {
+  padding-left: 1.5em;
+}
+
 @media print {
   body {
     font-size: 13px;

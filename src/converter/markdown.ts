@@ -148,6 +148,9 @@ export function convertMarkdownToHtml(filename: string, type: string, text: stri
       });
 
       // eslint-disable-next-line @typescript-eslint/no-require-imports
+      md.use(require('markdown-it-footnote'));
+
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       md.use(require('markdown-it-include'), {
         root: path.dirname(filename),
         includeRe: /:\[.+\]\((.+\..+)\)/i,
