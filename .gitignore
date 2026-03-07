@@ -7,3 +7,5 @@ work/**
 *.bat
 .eslintrc.json
 .DS_Store
+test-docs/*.pdf
+test-docs/*.html
