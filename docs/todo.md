@@ -3,7 +3,7 @@
 **Project:** Modernize abandoned vscode-markdown-pdf extension
 **Tagline:** A privacy-first, offline-capable Markdown to PDF converter for VSCode
 **Started:** 7 March 2026
-**Status:** Phase 3 Complete — Cleanup, CSS rewrite, accessibility, settings simplified
+**Status:** Phase 4 Documentation Complete — ready for manual testing
 **Last Updated:** 7 March 2026
 
 ---
@@ -368,53 +368,53 @@
 
 ### 4.1 Write README
 
-- [ ] Write compelling introduction (use marketing copy)
-- [ ] Add installation instructions
-- [ ] Add quick start guide
-- [ ] Document all features
-- [ ] Document all settings (simplified list)
-- [ ] Add Mermaid migration guide (from PlantUML)
-- [ ] Add troubleshooting section
-- [ ] Add FAQ
-- [ ] Add comparison table (Original vs Revived)
-- [ ] Add badges (version, downloads, license)
+- [x] Write compelling introduction (use marketing copy)
+- [x] Add installation instructions
+- [x] Add quick start guide
+- [x] Document all features
+- [x] Document all settings (simplified list)
+- [x] Add Mermaid migration guide (from PlantUML)
+- [x] Add troubleshooting section
+- [x] Add FAQ
+- [x] Add comparison table (Original vs Revived)
+- [x] Add badges (version, downloads, license)
 - [ ] Add screenshots of sample output
-- [ ] Add contribution guidelines
-- [ ] Add link to CHANGELOG and MIGRATION
+- [x] Add contribution guidelines
+- [x] Add link to CHANGELOG and MIGRATION
 
 ### 4.2 Write Migration Guide
 
-- [ ] Document breaking changes
-- [ ] Document removed features (PNG/JPEG, PlantUML)
-- [ ] Document setting changes
-- [ ] Provide Mermaid conversion examples
-- [ ] Document workflow changes
-- [ ] Add FAQ for common migration issues
+- [x] Document breaking changes
+- [x] Document removed features (PNG/JPEG, PlantUML)
+- [x] Document setting changes
+- [x] Provide Mermaid conversion examples
+- [x] Document workflow changes
+- [x] Add FAQ for common migration issues
 - [ ] Test migration with original extension users
 
 ### 4.3 Write Changelog
 
-- [ ] Set up Keep a Changelog format
-- [ ] Document v2.0.0 changes:
-  - [ ] Changed section (dependencies, architecture)
-  - [ ] Added section (KaTeX, security, tests)
-  - [ ] Removed section (PNG/JPEG, PlantUML, settings)
-  - [ ] Fixed section (Mermaid, PDF/HTML consistency)
-- [ ] Add migration notes
-- [ ] Link to relevant issues/PRs
+- [x] Set up Keep a Changelog format
+- [x] Document v2.0.0 changes:
+  - [x] Changed section (dependencies, architecture)
+  - [x] Added section (KaTeX, security, tests)
+  - [x] Removed section (PNG/JPEG, PlantUML, settings)
+  - [x] Fixed section (Mermaid, PDF/HTML consistency)
+- [x] Add migration notes
+- [x] Link to relevant issues/PRs
 
 ### 4.4 Update Package Metadata
 
-- [ ] Update `package.json` name (if changing)
-- [ ] Update `package.json` displayName
-- [ ] Update `package.json` description
-- [ ] Update `package.json` version to 2.0.0
-- [ ] Update `package.json` author/maintainer
-- [ ] Update `package.json` repository URL
-- [ ] Update `package.json` keywords
-- [ ] Update `package.json` categories
-- [ ] Update `package.json` activation events
-- [ ] Update `package.json` VSCode engine version
+- [x] Update `package.json` name (if changing)
+- [x] Update `package.json` displayName
+- [x] Update `package.json` description
+- [x] Update `package.json` version to 2.0.0
+- [x] Update `package.json` author/maintainer
+- [x] Update `package.json` repository URL
+- [x] Update `package.json` keywords
+- [x] Update `package.json` categories
+- [x] Update `package.json` activation events
+- [x] Update `package.json` VSCode engine version
 
 ### 4.5 Create Visual Assets (Optional)
 

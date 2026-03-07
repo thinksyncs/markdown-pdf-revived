@@ -241,6 +241,33 @@ The block rule had `if (max - pos < 4 ...)` guard (minimum `$$x$$` is 6 chars bu
 
 ---
 
+### Session 5: 7 March 2026 — Phase 3 Cleanup + Phase 4 Documentation
+
+**Status:** Complete
+
+#### Accomplished
+
+1. **Phase 3.1: Settings simplification** — 30 → 21 settings. Removed: `scale`, `pageRanges`, `width`, `height`, `includeDefaultStyles`, `stylesRelativePathFile`, `outputDirectoryRelativePathFile`, `StatusbarMessageTimeout`, `debug`, `markdown-it-include.enable`
+2. **Phase 3.2: Modernized defaults** — `highlightStyle`: `github.css`; `displayHeaderFooter`: `false`; margins: 2cm top/bottom, 2.5cm left/right
+3. **Phase 3.3: Rewrote CSS** — Replaced VSCode editor stylesheet with print-focused typography. `markdown.css`: system font stack, 1.7 line height, 15px base, heading separators, task list alignment, blockquote border. `markdown-pdf.css`: code block styling, Mermaid centering, KaTeX overflow, multi-page table headers, striped rows, `@media print` rules
+4. **Phase 3.4: Accessibility** — Added `lang="en"`, `<main>` landmark, `<meta charset>` and `<meta name="viewport">`. WCAG AA audit: all 9 color pairs pass (minimum 4.83:1 for `del` text at `#6b7280`)
+5. **Phase 3.5: Template update** (completed during 3.4) — Removed stale `.vscode-dark`/`.vscode-high-contrast` Mermaid theme detection. Escaped title with `{{title}}` (was `{{{title}}}`) for XSS-safe filename in `<title>`
+6. **Phase 3.6: Verification** — `npm run build`: 0 errors; `tsc --noEmit`: 0 errors; `npm audit --omit=dev`: 0 vulnerabilities; 21 settings confirmed; HTML5 template valid; 0 CDN references
+7. **Phase 4.4: package.json metadata** — `publisher: AUAggy`, `version: 2.0.0`, description updated, keywords updated, repository URL updated
+8. **Phase 4.3: CHANGELOG.md** — Written in Keep a Changelog format; v2.0.0 entry covers Added, Changed, Removed, Fixed sections
+9. **Phase 4.2: MIGRATION.md** — Written for yzane → AUAggy upgraders; covers breaking changes, removed features, setting changes, Mermaid conversion examples, FAQ
+10. **Phase 4.1: README.md** — Fully rewritten. Anti-slop review by subagent. Quality review by subagent.
+
+#### Key Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| Extension name: "Markdown PDF" (no "(Revived)" suffix) | Name the product, not its history. Feynman principle: name what it is, not where it came from |
+| All documentation under docs/anti-ai-slop.md rules | Concrete nouns, active verbs, no hedging, no filler phrases |
+| Subagent-driven development for Phase 4 docs | Parallelise doc writing; each subagent gets fresh context for quality review |
+
+---
+
 ## Project Status Dashboard
 
 | Phase | Status | Branch |
@@ -256,8 +283,14 @@ The block rule had `if (max - pos < 4 ...)` guard (minimum `$$x$$` is 6 chars bu
 | 2.4 Jest testing | Deferred | — |
 | 2.5–2.7 TypeScript Migration | Complete | feature/phase-2-5-typescript-migration |
 | 2.8 Phase 2 Verification | Complete | feature/phase-2-5-typescript-migration |
-| 3.1–3.6 Feature Cleanup | Not Started | — |
-| 4.1–4.9 Documentation & Release | Not Started | — |
+| 3.1–3.6 Feature Cleanup | Complete | feature/phase-3-cleanup |
+| 4.1 README | Complete | feature/phase-3-cleanup |
+| 4.2 Migration Guide | Complete | feature/phase-3-cleanup |
+| 4.3 Changelog | Complete | feature/phase-3-cleanup |
+| 4.4 Package Metadata | Complete | feature/phase-3-cleanup |
+| 4.5 Visual Assets | Not Started | — |
+| 4.6 Final Testing | Not Started | — |
+| 4.7–4.10 Package/Publish/Announce | Not Started | — |
 
 ---
 
@@ -288,5 +321,5 @@ The block rule had `if (max - pos < 4 ...)` guard (minimum `$$x$$` is 6 chars bu
 ---
 
 **Last Updated:** 7 March 2026
-**Current Phase:** Phase 2 Complete
-**Next Phase:** 3.1 — Simplify settings; remove extension.js legacy file
+**Current Phase:** Phase 4 Documentation Complete
+**Next Phase:** 4.5 — Visual assets; 4.6 — Manual testing before publish
