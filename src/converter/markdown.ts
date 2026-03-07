@@ -33,6 +33,30 @@ function convertImgPath(src: string, filename: string): string {
   }
 }
 
+function transformCallouts(html: string): string {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const cheerio = require('cheerio') as typeof import('cheerio');
+  const $ = cheerio.load(html, { xmlMode: false });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  $('blockquote').each((_: number, el: any) => {
+    const firstP = $(el).find('p').first();
+    const text = firstP.text().trim();
+    const match = text.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/i);
+    if (!match) return;
+    const type = match[1].toLowerCase();
+    const label = match[1].toUpperCase();
+    // Remove the [!TYPE] marker from the first paragraph's HTML
+    const currentHtml = firstP.html() ?? '';
+    firstP.html(currentHtml.replace(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\](<br\s*\/?>)?/i, '').trim());
+    // Add the label paragraph before the content
+    firstP.before(`<p class="callout-label">${label}</p>`);
+    // Apply callout class and data attribute to the blockquote element
+    $(el).attr('class', `callout callout-${type}`);
+    $(el).attr('data-callout', type);
+  });
+  return $('body').html() ?? html;
+}
+
 export interface ConvertResult {
   html: string;
   title?: string;  // from YAML frontmatter, if present
@@ -158,7 +182,7 @@ export function convertMarkdownToHtml(filename: string, type: string, text: stri
 
       statusbarMessage.dispose();
       return {
-        html: md.render(matterParts.content),
+        html: transformCallouts(md.render(matterParts.content)),
         title: (typeof matterParts.data['title'] === 'string' && matterParts.data['title'].trim() !== '')
           ? (matterParts.data['title'] as string).trim()
           : undefined,

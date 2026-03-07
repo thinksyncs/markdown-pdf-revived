@@ -67,6 +67,7 @@ To exclude specific files from auto-convert, add filename patterns to `markdown-
 - Custom div containers via [markdown-it-container](https://github.com/markdown-it/markdown-it-container)
 - Checkbox and task list support via [markdown-it-checkbox](https://github.com/mcecot/markdown-it-checkbox)
 - Footnotes via `[^1]` syntax
+- GitHub-style callout blocks (`> [!NOTE]`, `> [!WARNING]`, etc.)
 - DOMPurify sanitization of rendered HTML before PDF/HTML output
 
 ## Settings

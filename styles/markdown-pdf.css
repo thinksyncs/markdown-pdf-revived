@@ -84,6 +84,25 @@ tr {
   padding-left: 1.5em;
 }
 
+/* GitHub-style callouts (> [!NOTE], > [!WARNING], etc.) */
+.callout {
+  border-left-width: 4px;
+  border-left-style: solid;
+  padding: 0.75em 1em;
+  margin: 1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.callout-label {
+  font-weight: 600;
+  margin: 0 0 0.25em 0;
+  font-size: 0.875em;
+}
+.callout-note     { border-color: #0969da; background-color: #ddf4ff; }
+.callout-tip      { border-color: #1a7f37; background-color: #dafbe1; }
+.callout-important{ border-color: #8250df; background-color: #fbefff; }
+.callout-warning  { border-color: #9a6700; background-color: #fff8c5; }
+.callout-caution  { border-color: #cf222e; background-color: #ffebe9; }
+
 @media print {
   body {
     font-size: 13px;
