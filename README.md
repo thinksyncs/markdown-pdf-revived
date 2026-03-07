@@ -124,7 +124,7 @@ Header and footer templates support these tokens:
 
 ## Mermaid Diagrams
 
-Mermaid diagrams render locally with no external server calls. All diagram types supported by Mermaid work, including flowcharts, sequence diagrams, class diagrams, Gantt charts, and state diagrams.
+Mermaid diagrams are rendered locally using the bundled `mermaid.min.js`. Before PDF capture, the extension waits for Mermaid's async SVG rendering to complete by polling for the `data-processed` attribute on each `.mermaid` element. This ensures diagrams appear in PDFs rather than as raw code blocks.
 
 ~~~markdown
 ```mermaid
@@ -185,9 +185,7 @@ Insert a page break with:
 ## Known Limitations
 
 - Chrome or Chromium must be installed separately. The extension does not bundle or download a browser.
-- Online CSS URLs (e.g., `https://example.com/styles.css`) may not resolve correctly in PDF output. Prefer local stylesheet paths.
-- PNG and JPEG export are not available. These were removed in v2.
-- PlantUML diagrams are not supported. PlantUML was removed in v2. Use Mermaid as a replacement.
+- Online CSS URLs (e.g., `https://example.com/styles.css`) do not resolve reliably in PDF output. Prefer local stylesheet paths.
 
 ## Credits
 
