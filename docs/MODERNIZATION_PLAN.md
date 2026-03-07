@@ -624,6 +624,49 @@ src/
 
 ---
 
+## 3.5 Mermaid CDN Dependency (Issue Flagged: Phase 1.3)
+
+### Problem
+
+The `markdown-pdf.mermaidServer` setting currently defaults to an **external CDN**:
+
+```
+"markdown-pdf.mermaidServer": {
+  "default": "https://unpkg.com/mermaid/dist/mermaid.min.js"
+}
+```
+
+This is injected directly into the HTML template as a `<script src="...">` tag (`extension.js`, `makeHtml()` function). Every PDF/HTML export triggers a network request to `unpkg.com` to load Mermaid.
+
+**This directly contradicts the project's core positioning:**
+- ❌ **Not privacy-first** — unpkg.com can log your IP and request metadata
+- ❌ **Not offline-capable** — export silently fails or renders blank diagrams without internet
+- ❌ **Not trustworthy** — CDN content can change, be compromised, or go down
+
+### Options
+
+| Option | Pros | Cons | Recommended Phase |
+|--------|------|------|-------------------|
+| **A. Bundle Mermaid locally** (vendor it into `node_modules`, copy to dist, serve as `file://` URI) | Full offline, private, fast, no CDN | Increases bundle size (~2MB), must update manually | ✅ Phase 1.4 (alongside Puppeteer upgrade) |
+| **B. Use Puppeteer's page.evaluate() to inject Mermaid** (load from local file via `fs.readFileSync` + inline `<script>`) | Offline, private, no extra file copying | Slightly more complex | ✅ Phase 1.4 alternative |
+| **C. Remove mermaidServer setting, hardcode local path** | Simplest — removes user-facing confusion | Less flexible | ✅ Phase 1.4 alongside option A or B |
+| **D. Keep CDN but make it opt-in / warn user** | Low effort now | Still breaks offline/privacy promise | ❌ Reject — contradicts brand |
+
+### Recommended Action (Phase 1.4)
+
+When Puppeteer is upgraded (Phase 1.4), implement **Option A + C**:
+
+1. After `npm install mermaid`, copy `node_modules/mermaid/dist/mermaid.min.js` into a `vendor/` folder
+2. In `makeHtml()`, replace the CDN `<script src>` with an inline `<script>` containing the file contents (base64 or raw inject)
+3. Remove `markdown-pdf.mermaidServer` setting entirely from `package.json`
+4. Document in README: "Mermaid renders locally — no internet required"
+
+### Current Workaround
+
+Until Phase 1.4, users can set `"markdown-pdf.mermaidServer": ""` to disable CDN loading (diagrams won't render but no external call is made). This should be documented.
+
+---
+
 ## 4. Risk Assessment
 
 | Risk | Likelihood | Impact | Mitigation |

@@ -13,8 +13,6 @@ function activate(context) {
     vscode.commands.registerCommand('extension.markdown-pdf.settings', async function () { await markdownPdf('settings'); }),
     vscode.commands.registerCommand('extension.markdown-pdf.pdf', async function () { await markdownPdf('pdf'); }),
     vscode.commands.registerCommand('extension.markdown-pdf.html', async function () { await markdownPdf('html'); }),
-    vscode.commands.registerCommand('extension.markdown-pdf.png', async function () { await markdownPdf('png'); }),
-    vscode.commands.registerCommand('extension.markdown-pdf.jpeg', async function () { await markdownPdf('jpeg'); }),
     vscode.commands.registerCommand('extension.markdown-pdf.all', async function () { await markdownPdf('all'); })
   ];
   commands.forEach(function (command) {
@@ -64,7 +62,7 @@ async function markdownPdf(option_type) {
       return;
     }
 
-    var types_format = ['html', 'pdf', 'png', 'jpeg'];
+    var types_format = ['html', 'pdf'];
     var filename = '';
     var types = [];
     if (types_format.indexOf(option_type) >= 0) {
@@ -79,7 +77,7 @@ async function markdownPdf(option_type) {
     } else if (option_type === 'all') {
       types = types_format;
     } else {
-      showErrorMessage('markdownPdf().1 Supported formats: html, pdf, png, jpeg.');
+      showErrorMessage('markdownPdf().1 Supported formats: html, pdf.');
       return;
     }
 
@@ -94,12 +92,12 @@ async function markdownPdf(option_type) {
           var html = makeHtml(content, uri);
           await exportPdf(html, filename, type, uri);
         } else {
-          showErrorMessage('markdownPdf().2 Supported formats: html, pdf, png, jpeg.');
+          showErrorMessage('markdownPdf().2 Supported formats: html, pdf.');
           return;
         }
       }
     } else {
-      showErrorMessage('markdownPdf().3 Supported formats: html, pdf, png, jpeg.');
+      showErrorMessage('markdownPdf().3 Supported formats: html, pdf.');
       return;
     }
   } catch (error) {
@@ -435,48 +433,6 @@ function exportPdf(data, filename, type, uri) {
             timeout: 0
           };
           await page.pdf(options);
-        }
-
-        // generate png and jpeg
-        // https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagescreenshotoptions
-        if (type == 'png' || type == 'jpeg') {
-          // Quality options do not apply to PNG images.
-          var quality_option;
-          if (type == 'png') {
-            quality_option = undefined;
-          }
-          if (type == 'jpeg') {
-            quality_option = vscode.workspace.getConfiguration('markdown-pdf')['quality'] || 100;
-          }
-
-          // screenshot size
-          var clip_x_option = vscode.workspace.getConfiguration('markdown-pdf')['clip']['x'] || null;
-          var clip_y_option = vscode.workspace.getConfiguration('markdown-pdf')['clip']['y'] || null;
-          var clip_width_option = vscode.workspace.getConfiguration('markdown-pdf')['clip']['width'] || null;
-          var clip_height_option = vscode.workspace.getConfiguration('markdown-pdf')['clip']['height'] || null;
-          var options;
-          if (clip_x_option !== null && clip_y_option !== null && clip_width_option !== null && clip_height_option !== null) {
-            options = {
-              path: exportFilename,
-              quality: quality_option,
-              fullPage: false,
-              clip: {
-                x: clip_x_option,
-                y: clip_y_option,
-                width: clip_width_option,
-                height: clip_height_option,
-              },
-              omitBackground: vscode.workspace.getConfiguration('markdown-pdf')['omitBackground'],
-            }
-          } else {
-            options = {
-              path: exportFilename,
-              quality: quality_option,
-              fullPage: true,
-              omitBackground: vscode.workspace.getConfiguration('markdown-pdf')['omitBackground'],
-            }
-          }
-          await page.screenshot(options);
         }
 
         await browser.close();

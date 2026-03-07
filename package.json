@@ -27,8 +27,6 @@
     "onCommand:extension.markdown-pdf.settings",
     "onCommand:extension.markdown-pdf.pdf",
     "onCommand:extension.markdown-pdf.html",
-    "onCommand:extension.markdown-pdf.png",
-    "onCommand:extension.markdown-pdf.jpeg",
     "onCommand:extension.markdown-pdf.all",
     "onLanguage:markdown"
   ],
@@ -51,18 +49,8 @@
         "group": "markdown-pdf"
       },
       {
-        "command": "extension.markdown-pdf.png",
-        "title": "Markdown PDF: Export (png)",
-        "group": "markdown-pdf"
-      },
-      {
-        "command": "extension.markdown-pdf.jpeg",
-        "title": "Markdown PDF: Export (jpeg)",
-        "group": "markdown-pdf"
-      },
-      {
         "command": "extension.markdown-pdf.all",
-        "title": "Markdown PDF: Export (all: pdf, html, png, jpeg)",
+        "title": "Markdown PDF: Export (all: pdf, html)",
         "group": "markdown-pdf"
       }
     ],
@@ -111,18 +99,8 @@
         },
         {
           "when": "resourceLangId == markdown",
-          "command": "extension.markdown-pdf.png",
-          "group": "markdown-pdf@4"
-        },
-        {
-          "when": "resourceLangId == markdown",
-          "command": "extension.markdown-pdf.jpeg",
-          "group": "markdown-pdf@5"
-        },
-        {
-          "when": "resourceLangId == markdown",
           "command": "extension.markdown-pdf.all",
-          "group": "markdown-pdf@6"
+          "group": "markdown-pdf@4"
         }
       ]
     },
@@ -138,7 +116,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Output format: pdf, html, png, jpeg. Multiple output formats support"
+          "description": "Output format: pdf, html. Multiple output formats support"
         },
         "markdown-pdf.convertOnSave": {
           "type": "boolean",
@@ -402,48 +380,6 @@
           "default": "1cm",
           "description": "Page Option. Border left. units: mm, cm, in, px",
           "scope": "resource"
-        },
-        "markdown-pdf.quality": {
-          "type": "number",
-          "default": 100,
-          "description": "jpeg only. The quality of the image, between 0-100. Not applicable to png images."
-        },
-        "markdown-pdf.clip.x": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "default": "",
-          "description": "png and jpeg only. x-coordinate of top-left corner of clip area."
-        },
-        "markdown-pdf.clip.y": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "default": "",
-          "description": "png and jpeg only. y-coordinate of top-left corner of clip area."
-        },
-        "markdown-pdf.clip.width": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "default": "",
-          "description": "png and jpeg only. width of clipping area."
-        },
-        "markdown-pdf.clip.height": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "default": "",
-          "description": "png and jpeg only. height of clipping area."
-        },
-        "markdown-pdf.omitBackground": {
-          "type": "boolean",
-          "default": false,
-          "description": "png and jpeg only. Hides default white background and allows capturing screenshots with transparency."
         },
         "markdown-pdf.StatusbarMessageTimeout": {
           "type": "number",
