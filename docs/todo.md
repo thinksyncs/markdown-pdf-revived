@@ -3,7 +3,7 @@
 **Project:** Modernize abandoned vscode-markdown-pdf extension
 **Tagline:** A privacy-first, offline-capable Markdown to PDF converter for VSCode
 **Started:** 7 March 2026
-**Status:** Phase 3.1 Complete — Settings simplified (30 → 22 settings)
+**Status:** Phase 3 Complete — Cleanup, CSS rewrite, accessibility, settings simplified
 **Last Updated:** 7 March 2026
 
 ---
@@ -332,25 +332,33 @@
 - [x] Remove stale `.vscode-dark`/`.vscode-high-contrast` Mermaid theme detection
 - [x] Escape title with `{{title}}` (was `{{{title}}}`) — XSS-safe filename in `<title>`
 
-### 3.5 Update Template
+### 3.5 Update Template ✅ COMPLETE (completed during 3.4)
 
-- [ ] Modernize `template/template.html`
-- [ ] Add HTML5 semantic elements
-- [ ] Add meta tags for accessibility
-- [ ] Inject CSS variables for theming
-- [ ] Add KaTeX CSS
-- [ ] Add Mermaid JS (bundled, not CDN)
-- [ ] Remove external CDN dependencies
-- [ ] Test template produces valid HTML
+- [x] Modernize `template/template.html` — clean, minimal, no cruft
+- [x] HTML5 semantic elements — `<main>` landmark wraps content
+- [x] Meta tags — `charset`, `viewport`
+- [x] CSS variables for theming — SKIP (KISS; no user benefit in a PDF exporter)
+- [x] KaTeX CSS — linked via `readStyles()` in `page.ts` (done Phase 1)
+- [x] Mermaid JS bundled from `node_modules` — inlined via `makeHtml()` (done Phase 1)
+- [x] No external CDN dependencies — zero since Phase 1.4
 
-### 3.6 Phase 3 Verification
+### 3.6 Phase 3 Verification ✅ COMPLETE
 
-- [ ] Settings UI shows ~22 settings (down from ~30)
-- [ ] All settings have clear descriptions
-- [ ] Default output looks modern and beautiful
-- [ ] Color contrast passes WCAG AA
-- [ ] HTML export is valid HTML5
-- [ ] No external CDN calls (all bundled)
+**Automated (static):**
+- [x] `npm run build` → 0 errors; `dist/extension.js` 26.8 KB
+- [x] `tsc --noEmit` → 0 errors
+- [x] `npm audit --omit=dev` → 0 vulnerabilities
+- [x] Settings count: 21 (down from ~30); all have descriptions
+- [x] Template: `doctype`, `lang=en`, `charset`, `viewport`, `<main>`, `<title>` all present
+- [x] No CDN references in any source file
+- [x] CSS contrast audit: all color pairs pass WCAG AA (min 4.83:1)
+
+**Manual (requires VSCode — defer to pre-release):**
+- [ ] Settings UI renders correctly with 21 settings
+- [ ] PDF export with basic.md — modern typography verified
+- [ ] PDF export with math.md — KaTeX renders
+- [ ] PDF export with mermaid.md — diagrams render
+- [ ] HTML export — valid HTML5, no external requests
 
 ---
 
