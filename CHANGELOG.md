@@ -31,7 +31,7 @@ offline capability, and a reduced feature set that works correctly.
   (closes [#30](https://github.com/yzane/vscode-markdown-pdf/issues/30),
   [#312](https://github.com/yzane/vscode-markdown-pdf/issues/312))
 - TypeScript source with strict mode enabled
-- esbuild bundle pipeline (`src/` -> `dist/extension.js`); pure-JS deps bundled into output, reducing .vsix size from ~60MB to ~16MB
+- esbuild bundle pipeline (`src/` -> `dist/extension.js`); pure-JS deps bundled into output, reducing .vsix size from ~60MB to ~11MB
 - Cross-platform Chrome auto-detection (macOS, Linux, Windows)
   (closes [#336](https://github.com/yzane/vscode-markdown-pdf/issues/336))
 - `github.css` syntax highlight theme as default
@@ -58,6 +58,16 @@ offline capability, and a reduced feature set that works correctly.
 - KaTeX single-line display math (`$$formula$$` on one line was not matched)
 - `spawn Unknown system error -86` on macOS Ventura and later
   (closes [#336](https://github.com/yzane/vscode-markdown-pdf/issues/336))
+- Inline `code` styling in PDF output (washed-out colour restored)
+  (closes [#103](https://github.com/yzane/vscode-markdown-pdf/issues/103))
+- YAML frontmatter `title:` now used in PDF header/footer `<span class='title'>`
+  (closes [#193](https://github.com/yzane/vscode-markdown-pdf/issues/193))
+- `%%ISO-DATE%%`, `%%ISO-DATETIME%%`, `%%ISO-TIME%%` tokens work in header/footer templates
+  (closes [#210](https://github.com/yzane/vscode-markdown-pdf/issues/210))
+- Style paths in `markdown-pdf.styles` now resolve relative to the source `.md` file first, then workspace root
+  (closes [#126](https://github.com/yzane/vscode-markdown-pdf/issues/126))
+- User CSS injected into PDF header/footer renderer context (Puppeteer renders header/footer in a separate context where `<link>` tags are ignored)
+  (closes [#75](https://github.com/yzane/vscode-markdown-pdf/issues/75))
 
 ### Security
 - Patched CVE-2024-7739: XSS via unsanitized HTML in markdown blocks
@@ -65,15 +75,3 @@ offline capability, and a reduced feature set that works correctly.
 - Removed bundled Chromium with known CVEs; extension now uses system Chrome
   (closes [#341](https://github.com/yzane/vscode-markdown-pdf/issues/341))
 - `npm audit --omit=dev`: 0 vulnerabilities
-
-### Fixed
-- Inline `code` styling in PDF output (washed-out colour restored)
-  (closes [#103](https://github.com/yzane/vscode-markdown-pdf/issues/103))
-- YAML frontmatter `title:` now used in PDF header/footer `<span class='title'>`
-  (closes [#193](https://github.com/yzane/vscode-markdown-pdf/issues/193))
-- `%%ISO-DATE%%`, `%%ISO-DATETIME%%`, `%%ISO-TIME%%` tokens work correctly in header/footer templates
-  (closes [#210](https://github.com/yzane/vscode-markdown-pdf/issues/210))
-- Style paths in `markdown-pdf.styles` now resolve relative to the source `.md` file first, then workspace root
-  (closes [#126](https://github.com/yzane/vscode-markdown-pdf/issues/126))
-- User CSS now injected into PDF header/footer renderer context (Puppeteer renders header/footer separately from the page)
-  (closes [#75](https://github.com/yzane/vscode-markdown-pdf/issues/75))
