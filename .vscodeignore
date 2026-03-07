@@ -2,6 +2,8 @@
 .github/**
 .gitignore
 .DS_Store
+.playwright-mcp/**
+original-icon.png
 test/**
 test-docs/**
 docs/**
