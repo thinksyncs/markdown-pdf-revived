@@ -13,6 +13,7 @@ esbuild.js
 tsconfig.json
 work/**
 *.vsix
+*.vsix.zip
 *.bat
 
 # Exclude all of node_modules — pure-JS deps are bundled into dist/extension.js
@@ -28,12 +29,6 @@ node_modules/**
 !node_modules/tldts-core/**
 !node_modules/zod/**
 !node_modules/@puppeteer/**
-
-# jsdom: must stay external (loads default-stylesheet.css via __dirname at runtime)
-!node_modules/jsdom/**
-
-# dompurify: used with jsdom for sanitization; kept external alongside jsdom
-!node_modules/dompurify/**
 
 # mermaid: only the pre-built browser bundle (inlined into HTML at render time)
 !node_modules/mermaid/dist/mermaid.min.js
