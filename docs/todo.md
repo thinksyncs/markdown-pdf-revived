@@ -173,24 +173,23 @@
 
 **Goal:** Transform from monolithic JS file to modular TypeScript codebase.
 
-### 2.1 Set Up TypeScript
+### 2.1 Set Up TypeScript ✅ COMPLETE
 
-- [ ] Add `typescript` as dev dependency
-- [ ] Create `tsconfig.json` with VSCode extension settings
-- [ ] Add TypeScript VSCode extension recommendations
-- [ ] Configure strict mode
-- [ ] Set up build scripts in `package.json`
+- [x] Add `typescript: ^5.9.3` as dev dependency
+- [x] Add `@types/node` and `@types/vscode` as dev dependencies
+- [x] Create `tsconfig.json` — strict mode, ES2020, commonjs, rootDir `src/`, outDir `dist/`
+- [x] `tsc --noEmit` → 0 errors
 
-### 2.2 Set Up Build System (esbuild)
+### 2.2 Set Up Build System (esbuild) ✅ COMPLETE
 
-- [ ] Add `esbuild` as dev dependency
-- [ ] Create `esbuild.config.js`
-- [ ] Configure bundling for VSCode extension
-- [ ] Add build script: `npm run build`
-- [ ] Add watch script: `npm run watch`
-- [ ] Test build produces working extension
-- [ ] Configure tree-shaking
-- [ ] Set up sourcemaps for debugging
+- [x] Add `esbuild: ^0.27.3` as dev dependency
+- [x] Create `esbuild.js` build script
+- [x] Bundle target: `src/extension.ts` → `dist/extension.js`; all large runtime deps kept external
+- [x] Updated `package.json` `"main"` → `"./dist/extension"`
+- [x] Added scripts: `build` (`node esbuild.js`), `watch` (`node esbuild.js --watch`), `vscode:prepublish` (`node esbuild.js`)
+- [x] Created `src/extension.ts` bridge that delegates to `extension.js` — build pipeline live before full TS migration
+- [x] `npm run build` → dist/extension.js (33KB) + sourcemap — build complete
+- [x] Added `dist/` and `.DS_Store` to `.gitignore`
 
 ### 2.3 Set Up Linting & Formatting
 

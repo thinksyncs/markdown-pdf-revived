@@ -1,7 +1,9 @@
 .history
 .vscode-test
 node_modules
+dist/
 work/**
 *.vsix
 *.bat
 .eslintrc.json
+.DS_Store
