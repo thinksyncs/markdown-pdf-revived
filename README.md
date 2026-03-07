@@ -20,7 +20,7 @@ This is a fork of [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-ma
 
 **Removed:** PlantUML (sent source to plantuml.com), PNG/JPEG export, Chromium auto-download, 10 settings.
 
-**Added:** KaTeX math, DOMPurify sanitization (CVE-2024-7739), Mermaid async render fix, TypeScript rewrite, esbuild bundling (~16MB, down from 60MB), footnotes, GitHub-style callouts, configurable export timeout.
+**Added:** KaTeX math, DOMPurify sanitization (CVE-2024-7739), Mermaid async render fix, TypeScript rewrite, esbuild bundling (~11MB, down from 60MB), footnotes, GitHub-style callouts, configurable export timeout.
 
 **Changed:** Default margins, highlight theme (github.css), header/footer off by default.
 
@@ -30,6 +30,16 @@ This is a fork of [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-ma
 | PNG/JPEG export | Removed. PDF and HTML output only. |
 | Chromium auto-download | Removed. The API (`createBrowserFetcher`) was dropped in puppeteer v20. |
 | 10 settings | Removed or folded into fixed behavior. See [MIGRATION.md](MIGRATION.md). |
+
+## Getting Started
+
+**VS Code users** can search for "Markdown PDF" in the Extensions panel or install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=PLACEHOLDER).
+
+**VSCodium users** should install from [Open VSX](https://open-vsx.org/extension/PLACEHOLDER).
+
+**Manual install:** Download the `.vsix` from the [latest GitHub release](https://github.com/AUAggy/markdown-pdf-revived/releases), then run `Extensions: Install from VSIX` from the command palette.
+
+Chrome or Chromium must be installed separately — the extension uses your system browser for PDF rendering. See [Requirements](#requirements) for details.
 
 ## Usage
 
@@ -189,31 +199,6 @@ Insert a page break with:
 
 - Chrome or Chromium must be installed separately. The extension does not bundle or download a browser.
 - Online CSS URLs (e.g., `https://example.com/styles.css`) do not resolve reliably in PDF output. Prefer local stylesheet paths.
-
-## Credits
-
-This extension is a fork of [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-markdown-pdf).
-
-Libraries:
-
-- [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)
-- [markdown-it/markdown-it](https://github.com/markdown-it/markdown-it)
-- [mcecot/markdown-it-checkbox](https://github.com/mcecot/markdown-it-checkbox)
-- [valeriangalliat/markdown-it-anchor](https://github.com/valeriangalliat/markdown-it-anchor)
-- [markdown-it/markdown-it-emoji](https://github.com/markdown-it/markdown-it-emoji)
-- [isagalaev/highlight.js](https://github.com/isagalaev/highlight.js)
-- [cheeriojs/cheerio](https://github.com/cheeriojs/cheerio)
-- [janl/mustache.js](https://github.com/janl/mustache.js)
-- [markdown-it/markdown-it-container](https://github.com/markdown-it/markdown-it-container)
-- [camelaissani/markdown-it-include](https://github.com/camelaissani/markdown-it-include)
-- [mermaid-js/mermaid](https://github.com/mermaid-js/mermaid)
-- [KaTeX/KaTeX](https://github.com/KaTeX/KaTeX)
-- [cure53/DOMPurify](https://github.com/cure53/DOMPurify)
-- [jonschlinkert/gray-matter](https://github.com/jonschlinkert/gray-matter)
-
-and
-
-- [cakebake/markdown-themeable-pdf](https://github.com/cakebake/markdown-themeable-pdf)
 
 ## License
 
