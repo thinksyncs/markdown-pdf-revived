@@ -1,18 +1,25 @@
-# Markdown PDF
+<p align="center">
+  <img src="images/icon.png" width="96" alt="Markdown PDF (Revived)">
+</p>
+
+<h1 align="center">Markdown PDF (Revived)</h1>
+
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=AUAggy.markdown-pdf-revived"><img src="https://img.shields.io/visual-studio-marketplace/v/AUAggy.markdown-pdf-revived?label=VS%20Code&color=0078d4" alt="VS Code Marketplace"></a>
+  <a href="https://open-vsx.org/extension/AUAggy/markdown-pdf-revived"><img src="https://img.shields.io/open-vsx/v/AUAggy/markdown-pdf-revived?label=Open%20VSX&color=c160ef" alt="Open VSX"></a>
+  <a href="https://github.com/AUAggy/markdown-pdf-revived/releases"><img src="https://img.shields.io/github/v/release/AUAggy/markdown-pdf-revived?label=Release&color=e53e3e" alt="GitHub Release"></a>
+  <a href="LICENSE.txt"><img src="https://img.shields.io/github/license/AUAggy/markdown-pdf-revived?color=555" alt="MIT License"></a>
+</p>
+
+<p align="center">
+  <a href="#getting-started">Install</a> &bull;
+  <a href="#what-changed-in-v2">What changed</a> &bull;
+  <a href="#features">Features</a> &bull;
+  <a href="#settings">Settings</a> &bull;
+  <a href="#requirements">Requirements</a>
+</p>
 
 Converts Markdown files to PDF or HTML from within VSCode. All rendering is local; no external servers, no telemetry, Chrome required.
-
-## Requirements
-
-Chrome or Chromium must be installed. The extension detects it automatically at standard installation paths on macOS, Linux, and Windows.
-
-To use a non-standard Chrome binary:
-
-```json
-"markdown-pdf.executablePath": "/path/to/chrome"
-```
-
-Restart VSCode after changing this setting.
 
 ## What Changed in v2
 
@@ -31,6 +38,18 @@ This is a fork of [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-ma
 | Chromium auto-download | Removed. The API (`createBrowserFetcher`) was dropped in puppeteer v20. |
 | 10 settings | Removed or folded into fixed behavior. See [MIGRATION.md](MIGRATION.md). |
 
+## Requirements
+
+Chrome or Chromium must be installed. The extension detects it automatically at standard installation paths on macOS, Linux, and Windows.
+
+To use a non-standard Chrome binary:
+
+```json
+"markdown-pdf.executablePath": "/path/to/chrome"
+```
+
+Restart VSCode after changing this setting.
+
 ## Getting Started
 
 **VS Code users** can search for "Markdown PDF" in the Extensions panel or install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=AUAggy.markdown-pdf-revived).
@@ -38,8 +57,6 @@ This is a fork of [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-ma
 **VSCodium users** should install from [Open VSX](https://open-vsx.org/extension/AUAggy/markdown-pdf-revived).
 
 **Manual install:** Download the `.vsix` from the [latest GitHub release](https://github.com/AUAggy/markdown-pdf-revived/releases), then run `Extensions: Install from VSIX` from the command palette.
-
-Chrome or Chromium must be installed separately — the extension uses your system browser for PDF rendering. See [Requirements](#requirements) for details.
 
 ## Usage
 
