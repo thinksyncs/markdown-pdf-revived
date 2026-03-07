@@ -124,11 +124,6 @@
           "default": "",
           "description": "Output Directory."
         },
-        "markdown-pdf.outputDirectoryRelativePathFile": {
-          "type": "boolean",
-          "default": false,
-          "description": "If markdown-pdf.outputDirectoryRelativePathFile option is set to true, the relative path set with markdown-pdf.outputDirectory is interpreted as relative from the file"
-        },
         "markdown-pdf.styles": {
           "type": "array",
           "default": [],
@@ -136,16 +131,6 @@
             "type": "string"
           },
           "description": "A list of local paths to the stylesheets to use from the markdown-pdf. All '\\' need to be written as '\\\\'."
-        },
-        "markdown-pdf.stylesRelativePathFile": {
-          "type": "boolean",
-          "default": false,
-          "description": "If markdown-pdf.stylesRelativePathFile option is set to true, the relative path set with markdown-pdf.styles is interpreted as relative from the file"
-        },
-        "markdown-pdf.includeDefaultStyles": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable the inclusion of default Markdown styles (VSCode, markdown-pdf)"
         },
         "markdown-pdf.highlight": {
           "type": "boolean",
@@ -269,11 +254,6 @@
           "default": "",
           "description": "Path to a Chromium or Chrome executable to run instead of the bundled Chromium."
         },
-        "markdown-pdf.scale": {
-          "type": "number",
-          "default": 1,
-          "description": "Scale of the page rendering."
-        },
         "markdown-pdf.displayHeaderFooter": {
           "type": "boolean",
           "default": true,
@@ -308,12 +288,6 @@
           "description": "pdf only. Paper orientation. portrait or landscape.",
           "scope": "resource"
         },
-        "markdown-pdf.pageRanges": {
-          "type": "string",
-          "default": "",
-          "description": "pdf only. Paper ranges to print, e.g., '1-5, 8, 11-13'.",
-          "scope": "resource"
-        },
         "markdown-pdf.format": {
           "type": "string",
           "enum": [
@@ -331,18 +305,6 @@
           ],
           "default": "A4",
           "description": "pdf only. Paper format [Letter, Legal, Tabloid, Ledger, A0, A1, A2, A3, A4, A5, A6].",
-          "scope": "resource"
-        },
-        "markdown-pdf.width": {
-          "type": "string",
-          "default": "",
-          "description": "pdf only. Paper width, accepts values labeled with units(mm, cm, in, px). If it is set, it overrides the markdown-pdf.format option.",
-          "scope": "resource"
-        },
-        "markdown-pdf.height": {
-          "type": "string",
-          "default": "",
-          "description": "pdf only. Paper height, accepts values labeled with units(mm, cm, in, px). If it is set, it overrides the markdown-pdf.format option.",
           "scope": "resource"
         },
         "markdown-pdf.margin.top": {
@@ -368,16 +330,6 @@
           "default": "1cm",
           "description": "Page Option. Border left. units: mm, cm, in, px",
           "scope": "resource"
-        },
-        "markdown-pdf.StatusbarMessageTimeout": {
-          "type": "number",
-          "default": 10000,
-          "description": "Statusbar message timeout [milliseconds]"
-        },
-        "markdown-pdf.markdown-it-include.enable": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable markdown-it-include. "
         },
         "markdown-pdf.math": {
           "type": "boolean",

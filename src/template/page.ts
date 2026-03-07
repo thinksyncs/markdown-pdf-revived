@@ -22,10 +22,9 @@ function fixHref(resource: vscode.Uri, href: string): string {
     if (['http', 'https'].includes(hrefUri.scheme)) return hrefUri.toString();
     if (href.startsWith('~')) return vscode.Uri.file(href.replace(/^~/, os.homedir())).toString();
     if (path.isAbsolute(href)) return vscode.Uri.file(href).toString();
+    // Resolve relative paths from workspace root
     const root = vscode.workspace.getWorkspaceFolder(resource);
-    if (!config.stylesRelativePathFile() && root) {
-      return vscode.Uri.file(path.join(root.uri.fsPath, href)).toString();
-    }
+    if (root) return vscode.Uri.file(path.join(root.uri.fsPath, href)).toString();
     return vscode.Uri.file(path.join(path.dirname(resource.fsPath), href)).toString();
   } catch (error) {
     showErrorMessage('fixHref()', error);
@@ -36,23 +35,22 @@ function fixHref(resource: vscode.Uri, href: string): string {
 export function readStyles(uri: vscode.Uri): string {
   try {
     let style = '';
-    const includeDefault = config.includeDefaultStyles();
 
-    if (includeDefault) {
-      style += makeCss(path.join(EXTENSION_ROOT, 'styles', 'markdown.css'));
+    // 1. Default markdown CSS
+    style += makeCss(path.join(EXTENSION_ROOT, 'styles', 'markdown.css'));
+
+    // 2. VS Code markdown.styles setting
+    for (const href of config.markdownStyles()) {
+      style += `<link rel="stylesheet" href="${fixHref(uri, href)}" type="text/css">`;
     }
 
-    if (includeDefault) {
-      for (const href of config.markdownStyles()) {
-        style += `<link rel="stylesheet" href="${fixHref(uri, href)}" type="text/css">`;
-      }
-    }
-
+    // 3. KaTeX styles (linked, not inlined, so relative font paths resolve in Puppeteer)
     if (config.math()) {
       const katexCss = path.join(EXTENSION_ROOT, 'node_modules', 'katex', 'dist', 'katex.min.css');
       style += `<link rel="stylesheet" href="${vscode.Uri.file(katexCss).toString()}">`;
     }
 
+    // 4. Syntax highlighting
     if (config.highlight()) {
       const highlightStyle = config.highlightStyle();
       if (highlightStyle) {
@@ -62,10 +60,10 @@ export function readStyles(uri: vscode.Uri): string {
       }
     }
 
-    if (includeDefault) {
-      style += makeCss(path.join(EXTENSION_ROOT, 'styles', 'markdown-pdf.css'));
-    }
+    // 5. Extension default styles
+    style += makeCss(path.join(EXTENSION_ROOT, 'styles', 'markdown-pdf.css'));
 
+    // 6. User custom stylesheets
     for (const href of config.styles(uri)) {
       style += `<link rel="stylesheet" href="${fixHref(uri, href)}" type="text/css">`;
     }
@@ -116,8 +114,9 @@ export function getOutputDir(filename: string, resource?: vscode.Uri): string {
       return path.join(outputDirectory, path.basename(filename));
     }
 
+    // Relative: resolve from workspace root, fall back to file directory
     const root = vscode.workspace.getWorkspaceFolder(resource);
-    if (!config.outputDirectoryRelativePathFile() && root) {
+    if (root) {
       outputDir = path.join(root.uri.fsPath, outputDirectory);
       mkdir(outputDir);
       return path.join(outputDir, path.basename(filename));

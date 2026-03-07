@@ -142,13 +142,11 @@ export function convertMarkdownToHtml(filename: string, type: string, text: stri
         },
       });
 
-      if (config.markdownItIncludeEnable()) {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        md.use(require('markdown-it-include'), {
-          root: path.dirname(filename),
-          includeRe: /:\[.+\]\((.+\..+)\)/i,
-        });
-      }
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      md.use(require('markdown-it-include'), {
+        root: path.dirname(filename),
+        includeRe: /:\[.+\]\((.+\..+)\)/i,
+      });
 
       statusbarMessage.dispose();
       return md.render(matterParts.content);

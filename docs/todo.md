@@ -3,7 +3,7 @@
 **Project:** Modernize abandoned vscode-markdown-pdf extension
 **Tagline:** A privacy-first, offline-capable Markdown to PDF converter for VSCode
 **Started:** 7 March 2026
-**Status:** Phase 2 Complete — TypeScript migration and build pipeline done
+**Status:** Phase 3.1 Complete — Settings simplified (30 → 22 settings)
 **Last Updated:** 7 March 2026
 
 ---
@@ -274,19 +274,18 @@
 
 **Goal:** Remove unnecessary features, simplify settings, modernize defaults.
 
-### 3.1 Simplify Settings
+### 3.1 Simplify Settings ✅ COMPLETE
 
-- [ ] Remove obsolete settings from `package.json`:
-  - [ ] `stylesRelativePathFile`
-  - [ ] `outputDirectoryRelativePathFile`
-  - [ ] `includeDefaultStyles`
-  - [ ] `scale`
-  - [ ] `pageRanges`
-  - [ ] `width` / `height`
-  - [ ] `executablePath` (document in README instead)
-  - [ ] `markdown-it-include.enable`
-  - [ ] `StatusbarMessageTimeout`
-  - [ ] `debug`
+- [x] Remove obsolete settings from `package.json`:
+  - [x] `stylesRelativePathFile`
+  - [x] `outputDirectoryRelativePathFile`
+  - [x] `includeDefaultStyles`
+  - [x] `scale`
+  - [x] `pageRanges`
+  - [x] `width` / `height`
+  - [x] `markdown-it-include.enable` (always enabled)
+  - [x] `StatusbarMessageTimeout` (hardcoded 10000ms)
+  - [x] `debug` (always delete tmp files)
 - [ ] Consolidate margin settings into single object
 - [ ] Update settings UI labels for clarity
 - [ ] Add setting descriptions with examples
@@ -326,17 +325,7 @@
 - [ ] Improve spacing throughout
 - [ ] Add responsive design for HTML export
 
-### 3.4 Add Dark Mode Support
-
-- [ ] Detect VSCode theme preference
-- [ ] Create dark mode CSS variables
-- [ ] Create light mode CSS variables
-- [ ] Auto-switch based on VSCode theme
-- [ ] Test dark mode with all elements
-- [ ] Test light mode with all elements
-- [ ] Ensure smooth transitions
-
-### 3.5 Improve Accessibility
+### 3.4 Improve Accessibility
 
 - [ ] Audit color contrast (WCAG AA minimum)
 - [ ] Fix low contrast text
@@ -346,7 +335,7 @@
 - [ ] Ensure focus indicators visible
 - [ ] Add skip links for HTML export
 
-### 3.6 Update Template
+### 3.5 Update Template
 
 - [ ] Modernize `template/template.html`
 - [ ] Add HTML5 semantic elements
@@ -357,13 +346,11 @@
 - [ ] Remove external CDN dependencies
 - [ ] Test template produces valid HTML
 
-### 3.7 Phase 3 Verification
+### 3.6 Phase 3 Verification
 
-- [ ] Settings UI shows ~16 settings (down from ~40)
+- [ ] Settings UI shows ~22 settings (down from ~30)
 - [ ] All settings have clear descriptions
 - [ ] Default output looks modern and beautiful
-- [ ] Dark mode works correctly
-- [ ] Light mode works correctly
 - [ ] Color contrast passes WCAG AA
 - [ ] HTML export is valid HTML5
 - [ ] No external CDN calls (all bundled)

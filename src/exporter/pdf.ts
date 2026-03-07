@@ -76,7 +76,6 @@ export async function exportPdf(
     return;
   }
 
-  const timeout = config.statusbarMessageTimeout();
   vscode.window.setStatusBarMessage('');
   const exportFilename = getOutputDir(filename, uri);
 
@@ -86,7 +85,7 @@ export async function exportPdf(
       try {
         if (type === 'html') {
           exportHtml(data, exportFilename);
-          vscode.window.setStatusBarMessage('$(markdown) ' + exportFilename, timeout);
+          vscode.window.setStatusBarMessage('$(markdown) ' + exportFilename, 10000);
           return;
         }
 
@@ -126,21 +125,15 @@ export async function exportPdf(
         }
 
         if (type === 'pdf') {
-          const widthOpt = config.width(uri);
-          const heightOpt = config.height(uri);
           const margin = config.margin(uri);
           await page.pdf({
             path: exportFilename,
-            scale: config.scale(uri),
             displayHeaderFooter: config.displayHeaderFooter(uri),
             headerTemplate: transformTemplate(config.headerTemplate(uri)),
             footerTemplate: transformTemplate(config.footerTemplate(uri)),
             printBackground: config.printBackground(uri),
             landscape: config.orientation(uri) === 'landscape',
-            pageRanges: config.pageRanges(uri),
-            format: (!widthOpt && !heightOpt ? config.format(uri) : undefined) as 'A4' | undefined,
-            width: widthOpt || undefined,
-            height: heightOpt || undefined,
+            format: config.format(uri) as 'A4',
             margin: { top: margin.top || undefined, right: margin.right || undefined, bottom: margin.bottom || undefined, left: margin.left || undefined },
             timeout: 0,
           });
@@ -148,11 +141,11 @@ export async function exportPdf(
 
         await browser.close();
 
-        if (!config.debug() && isExistsPath(tmpfilename)) {
+        if (isExistsPath(tmpfilename)) {
           deleteFile(tmpfilename);
         }
 
-        vscode.window.setStatusBarMessage('$(markdown) ' + exportFilename, timeout);
+        vscode.window.setStatusBarMessage('$(markdown) ' + exportFilename, 10000);
       } catch (error) {
         showErrorMessage('exportPdf()', error);
       }
