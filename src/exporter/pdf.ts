@@ -1,3 +1,4 @@
+import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { config } from '../config/settings';
@@ -92,7 +93,13 @@ export async function exportPdf(
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         const puppeteer = require('puppeteer-core') as typeof import('puppeteer-core');
         const f = path.parse(filename);
-        const tmpfilename = path.join(f.dir, f.name + '_tmp.html');
+        // On Windows, files on the WSL filesystem have UNC paths (\\wsl.localhost\...).
+        // Chrome blocks file:// access to UNC paths. Write the temp file to the
+        // system temp directory instead, which is always on a regular Windows path.
+        const tmpDir = (process.platform === 'win32' && f.dir.startsWith('\\\\'))
+          ? os.tmpdir()
+          : f.dir;
+        const tmpfilename = path.join(tmpDir, f.name + '_tmp.html');
         exportHtml(data, tmpfilename);
 
         // Resolve Chrome: user setting → auto-detected system Chrome

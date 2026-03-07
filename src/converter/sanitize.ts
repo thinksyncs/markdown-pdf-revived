@@ -16,8 +16,8 @@ export function sanitizeContent(html: string): string | null {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const createDOMPurify = require('dompurify') as (window: Window) => { sanitize: (s: string, o: object) => string };
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { JSDOM } = require('jsdom') as { JSDOM: new (html: string) => { window: Window } };
-    const window = new JSDOM('').window;
+    const jsdom = require('jsdom') as { JSDOM: new (html: string) => { window: Window } };
+    const window = new jsdom.JSDOM('').window;
     const DOMPurify = createDOMPurify(window as unknown as Window);
     return DOMPurify.sanitize(html, {
       FORCE_BODY: true,
