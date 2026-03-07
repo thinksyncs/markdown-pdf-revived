@@ -230,7 +230,7 @@ function convertMarkdownToHtml(filename, type, text) {
       statusbarmessage.dispose();
       showErrorMessage('markdown-it-emoji:options', error);
     }
-    md.use(require('markdown-it-emoji'), options);
+    md.use(require('markdown-it-emoji').full, options);
     md.renderer.rules.emoji = function (token, idx) {
       var emoji = token[idx].markup;
       var emojipath = path.join(__dirname, 'node_modules', 'emoji-images', 'pngs', emoji + '.png');
