@@ -66,14 +66,6 @@
         },
         {
           "when": "resourceLangId == markdown",
-          "command": "extension.markdown-pdf.png"
-        },
-        {
-          "when": "resourceLangId == markdown",
-          "command": "extension.markdown-pdf.jpeg"
-        },
-        {
-          "when": "resourceLangId == markdown",
           "command": "extension.markdown-pdf.all"
         }
       ],

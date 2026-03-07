@@ -81,7 +81,7 @@ async function markdownPdf(option_type) {
       return;
     }
 
-    // convert and export markdown to pdf, html, png, jpeg
+    // convert and export markdown to pdf or html
     if (types && Array.isArray(types) && types.length > 0) {
       for (var i = 0; i < types.length; i++) {
         var type = types[i];
@@ -530,6 +530,23 @@ function exportPdf(data, filename, type, uri) {
         const page = await browser.newPage();
         await page.setDefaultTimeout(0);
         await page.goto(vscode.Uri.file(tmpfilename).toString(), { waitUntil: 'networkidle0' });
+
+        // PR #399: wait for Mermaid to finish async rendering before capture.
+        // Mermaid marks each diagram div with data-processed="true" when done.
+        // Without this wait, PDFs captured Mermaid blocks as raw text while
+        // HTML export (rendered by user's browser) showed correct diagrams.
+        var hasMermaid = await page.evaluate(function () {
+          return document.querySelectorAll('.mermaid').length > 0;
+        });
+        if (hasMermaid) {
+          await page.waitForFunction(function () {
+            var unprocessed = document.querySelectorAll('.mermaid:not([data-processed])');
+            return unprocessed.length === 0;
+          }, { timeout: 10000 }).catch(function () {
+            // timeout — proceed anyway, best-effort render
+          });
+        }
+
         // generate pdf
         // https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagepdfoptions
         if (type == 'pdf') {
