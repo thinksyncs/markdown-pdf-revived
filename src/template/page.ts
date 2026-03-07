@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as os from 'os';
+import * as fs from 'fs';
 import * as vscode from 'vscode';
 import { EXTENSION_ROOT, config } from '../config/settings';
 import { readFile, isExistsDir, mkdir } from '../utils/file';
@@ -13,6 +14,14 @@ function makeCss(filename: string): string {
     showErrorMessage('makeCss()', error);
     return '';
   }
+}
+
+export function resolveStylePath(href: string, uri: vscode.Uri): string {
+  if (path.isAbsolute(href)) return href;
+  const relToFile = path.resolve(path.dirname(uri.fsPath), href);
+  if (fs.existsSync(relToFile)) return relToFile;
+  const workspaceRoot = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath ?? path.dirname(uri.fsPath);
+  return path.resolve(workspaceRoot, href);
 }
 
 function fixHref(resource: vscode.Uri, href: string): string {
@@ -65,7 +74,8 @@ export function readStyles(uri: vscode.Uri): string {
 
     // 6. User custom stylesheets
     for (const href of config.styles(uri)) {
-      style += `<link rel="stylesheet" href="${fixHref(uri, href)}" type="text/css">`;
+      const resolved = resolveStylePath(href, uri);
+      style += `<link rel="stylesheet" href="${vscode.Uri.file(resolved).toString()}" type="text/css">`;
     }
 
     return style;
