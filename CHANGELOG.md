@@ -31,7 +31,7 @@ offline capability, and a reduced feature set that works correctly.
   (closes [#30](https://github.com/yzane/vscode-markdown-pdf/issues/30),
   [#312](https://github.com/yzane/vscode-markdown-pdf/issues/312))
 - TypeScript source with strict mode enabled
-- esbuild bundle pipeline (`src/` -> `dist/extension.js`); pure-JS deps bundled into output, reducing .vsix size from ~60MB to ~11MB
+- esbuild bundle pipeline (`src/` -> `dist/extension.js`); pure-JS deps bundled into output, .vsix size ~11MB
 - Cross-platform Chrome auto-detection (macOS, Linux, Windows)
   (closes [#336](https://github.com/yzane/vscode-markdown-pdf/issues/336))
 - `github.css` syntax highlight theme as default
