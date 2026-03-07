@@ -68,15 +68,18 @@ const options = {
   external: [
     // Always external — VSCode API is injected by the host
     'vscode',
-    // puppeteer-core: native bindings + complex runtime launcher; must stay external
-    'puppeteer-core',
     // canvas: optional native addon used by jsdom; not required, but must stay external
     // if present so esbuild doesn't try to bundle a .node file
     'canvas',
-    // All other deps (including jsdom and dompurify) are bundled into dist/extension.js.
-    // jsdom's default-stylesheet.css is inlined at build time by jsdomCssInlinePlugin.
-    // mermaid.min.js, katex CSS/fonts, highlight.js styles, and emoji-images PNGs
-    // are file-system assets read at runtime and handled via .vscodeignore allowlist.
+    // Everything else — including puppeteer-core, jsdom, dompurify, and all transitive
+    // deps — is bundled into dist/extension.js. This eliminates hoisted-dependency
+    // problems where npm puts transitive deps (semver, tough-cookie, etc.) at the
+    // top-level node_modules/ and .vscodeignore allowlists miss them.
+    //
+    // jsdom internals that break when bundled are patched by jsdomPatchPlugin above.
+    //
+    // The only node_modules entries in the .vsix are file assets read at runtime:
+    // mermaid.min.js, katex CSS/fonts, highlight.js styles, emoji-images PNGs.
   ],
   sourcemap: true,
   minify: false,

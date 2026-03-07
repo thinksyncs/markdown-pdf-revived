@@ -19,16 +19,9 @@ work/**
 # Exclude all of node_modules — pure-JS deps are bundled into dist/extension.js
 node_modules/**
 
-# Re-include only the runtime file assets that the extension reads from disk:
-
-# puppeteer-core and its transitive deps (launcher, CDP, browser binaries discovery)
-!node_modules/puppeteer-core/**
-!node_modules/chromium-bidi/**
-!node_modules/devtools-protocol/**
-!node_modules/tldts/**
-!node_modules/tldts-core/**
-!node_modules/zod/**
-!node_modules/@puppeteer/**
+# Re-include only file assets that the extension reads from disk at runtime.
+# All JS dependencies (including puppeteer-core, jsdom, dompurify, and their
+# transitive deps) are bundled into dist/extension.js by esbuild.
 
 # mermaid: only the pre-built browser bundle (inlined into HTML at render time)
 !node_modules/mermaid/dist/mermaid.min.js
