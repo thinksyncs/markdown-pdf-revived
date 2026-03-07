@@ -27,7 +27,7 @@ This is a fork of [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-ma
 
 **Removed:** PlantUML (sent source to plantuml.com), PNG/JPEG export, Chromium auto-download, 10 settings.
 
-**Added:** KaTeX math, DOMPurify sanitization (CVE-2024-7739), Mermaid async render fix, TypeScript rewrite, esbuild bundling (~11MB, down from 60MB), footnotes, GitHub-style callouts, configurable export timeout.
+**Added:** KaTeX math, DOMPurify sanitization (CVE-2024-7739), Mermaid async render fix, TypeScript rewrite, esbuild bundling (~11MB), footnotes, GitHub-style callouts, configurable export timeout.
 
 **Changed:** Default margins, highlight theme (github.css), header/footer off by default.
 
