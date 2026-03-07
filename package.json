@@ -1,6 +1,6 @@
 {
   "name": "markdown-pdf-revived",
-  "displayName": "Markdown PDF",
+  "displayName": "Markdown PDF (Revived)",
   "description": "Markdown to PDF/HTML converter. Local rendering, no external servers, Chrome required.",
   "version": "2.0.0",
   "publisher": "AUAggy",
