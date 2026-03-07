@@ -5,7 +5,6 @@ A privacy-first, offline-capable Markdown to PDF/HTML converter for VSCode.
 ## Table of Contents
 <!-- TOC depthFrom:2 depthTo:2 updateOnSave:false -->
 
-- [Specification Changes](#specification-changes)
 - [Features](#features)
 - [Install](#install)
 - [Usage](#usage)
@@ -21,13 +20,6 @@ A privacy-first, offline-capable Markdown to PDF/HTML converter for VSCode.
 
 <div class="page"/>
 
-## Specification Changes
-
-- Default Date Format for PDF Headers and Footers Modified
-  - Starting from version 1.5.0, the default date format for headers and footers has been changed to the ISO-based format (YYYY-MM-DD).
-  - This change aims to improve the consistency of date displays, as the previous format could vary depending on the environment.
-  - If you wish to use the previous format, please refer to [markdown-pdf.headerTemplate](#markdown-pdfheadertemplate).
-
 ## Features
 
 Supports the following features
@@ -37,10 +29,6 @@ Supports the following features
 * [markdown-it-container](https://github.com/markdown-it/markdown-it-container)
 * [markdown-it-include](https://github.com/camelaissani/markdown-it-include)
 * [mermaid](https://mermaid-js.github.io/mermaid/) - Local rendering, offline-capable
-
-Sample files
- * [pdf](sample/README.pdf)
- * [html](sample/README.html)
 
 ### markdown-it-container
 
@@ -71,7 +59,6 @@ stateDiagram
 
 OUTPUT
 
-![mermaid](images/mermaid.png)
 
 ### markdown-it-include
 
@@ -146,7 +133,6 @@ To use a custom Chrome binary, set `markdown-pdf.executablePath` in your setting
    * `markdown-pdf: Export (html)`
    * `markdown-pdf: Export (all: pdf, html)`
 
-![usage1](images/usage1.gif)
 
 ### Menu
 
@@ -157,7 +143,6 @@ To use a custom Chrome binary, set `markdown-pdf.executablePath` in your setting
    * `markdown-pdf: Export (html)`
    * `markdown-pdf: Export (all: pdf, html)`
 
-![usage2](images/usage2.gif)
 
 ### Auto convert
 
@@ -175,7 +160,6 @@ To use a custom Chrome binary, set `markdown-pdf.executablePath` in your setting
 1. Copy `markdown-pdf.*` settings
 1. Paste to the **settings.json**, and change the value
 
-![demo](images/settings.gif)
 
 ## Options
 
