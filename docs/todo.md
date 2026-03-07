@@ -3,7 +3,7 @@
 **Project:** Modernize abandoned vscode-markdown-pdf extension
 **Tagline:** A privacy-first, offline-capable Markdown to PDF converter for VSCode
 **Started:** 7 March 2026
-**Status:** Phase 1.4 Complete - Dependencies Updated, KaTeX + Local Mermaid Added
+**Status:** Phase 1.5 Complete - CVE-2024-7739 Fixed (DOMPurify HTML Sanitization)
 **Last Updated:** 7 March 2026
 
 ---
@@ -110,13 +110,19 @@
 **PR #399 (PDF/HTML consistency):**
 - [ ] Still to investigate and implement in Phase 1.6 verification pass
 
-### 1.5 Fix Security Vulnerability (CVE-2024-7739)
+### 1.5 Fix Security Vulnerability (CVE-2024-7739) ✅ COMPLETE
 
-- [ ] Add `dompurify` dependency
-- [ ] Add `jsdom` dependency
-- [ ] Implement HTML sanitization in render pipeline
-- [ ] Test with malicious markdown input
-- [ ] Verify no XSS vulnerabilities remain
+- [x] Add `dompurify: ^3.3.2` dependency
+- [x] Add `jsdom: ^28.1.0` dependency
+- [x] Implement `sanitizeContent()` in `extension.js` using DOMPurify + jsdom
+- [x] Sanitize only user-supplied markdown content — not trusted internal assets (Mermaid script, styles)
+- [x] Fail-closed: if sanitization errors, export is blocked and user is notified
+- [x] Guard `exportPdf()` call site — aborts if `makeHtml()` returns null
+- [x] DOMPurify config preserves Mermaid `data-*` attributes and KaTeX/MathML/SVG elements
+- [x] DOMPurify config explicitly forbids `<script>`, `<iframe>`, `<object>`, `<embed>`, `<base>` and all inline event handlers
+- [x] `npm audit --omit=dev` still shows 0 production vulnerabilities
+- [ ] Test with malicious markdown input (XSS payloads)
+- [ ] Test that legitimate content (tables, code, Mermaid, KaTeX) still renders correctly
 - [ ] Document security improvements in README
 
 ### 1.6 Phase 1 Verification
@@ -585,4 +591,4 @@ Create and maintain these test files:
 ---
 
 **Last Updated:** 7 March 2026
-**Next Action:** Phase 1.5 — Fix CVE-2024-7739 (DOMPurify sanitization), then Phase 1.6 verification
+**Next Action:** Phase 1.6 — Full verification pass (test all features, investigate PR #399, document security in README)

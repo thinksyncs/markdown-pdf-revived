@@ -90,6 +90,7 @@ async function markdownPdf(option_type) {
           var text = editor.document.getText();
           var content = convertMarkdownToHtml(mdfilename, type, text);
           var html = makeHtml(content, uri);
+          if (!html) return;
           await exportPdf(html, filename, type, uri);
         } else {
           showErrorMessage('markdownPdf().2 Supported formats: html, pdf.');
@@ -381,10 +382,52 @@ function Slug(string) {
 }
 
 /*
+ * Sanitize user-supplied HTML content to prevent XSS (CVE-2024-7739).
+ * Only the markdown-rendered content is sanitized — not trusted internal
+ * assets like the inlined Mermaid script or extension stylesheets.
+ *
+ * Config rationale:
+ *   FORCE_BODY       – treat input as a body fragment, not a full document
+ *   ALLOW_DATA_ATTR  – preserve data-* attributes used by Mermaid diagrams
+ *   ADD_TAGS         – allow <svg> and MathML elements so KaTeX renders correctly
+ *   FORBID_TAGS      – explicitly block <script>, <iframe>, <object> in user content
+ *   FORBID_ATTR      – block all inline event handlers (onclick, onerror, etc.)
+ */
+function sanitizeContent(html) {
+  try {
+    var createDOMPurify = require('dompurify');
+    var { JSDOM } = require('jsdom');
+    var window = (new JSDOM('')).window;
+    var DOMPurify = createDOMPurify(window);
+    return DOMPurify.sanitize(html, {
+      FORCE_BODY: true,
+      ALLOW_DATA_ATTR: true,
+      ADD_TAGS: ['svg', 'math', 'mrow', 'mi', 'mo', 'mn', 'msup', 'msub', 'mfrac',
+                 'mover', 'munder', 'munderover', 'mtext', 'mtable', 'mtr', 'mtd',
+                 'semantics', 'annotation'],
+      FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'base'],
+      FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus',
+                    'onblur', 'onchange', 'onsubmit', 'onkeydown', 'onkeyup',
+                    'onkeypress', 'onmousedown', 'onmouseup', 'onmousemove']
+    });
+  } catch (error) {
+    showErrorMessage('sanitizeContent(): HTML sanitization failed — export blocked for safety.', error);
+    return null;
+  }
+}
+
+/*
  * make html
  */
 function makeHtml(data, uri) {
   try {
+    // sanitize user-supplied markdown content (CVE-2024-7739)
+    var sanitized = sanitizeContent(data);
+    if (sanitized === null) {
+      showErrorMessage('makeHtml(): Aborting export — content could not be sanitized.');
+      return null;
+    }
+
     // read styles
     var style = '';
     style += readStyles(uri);
@@ -407,7 +450,7 @@ function makeHtml(data, uri) {
     var view = {
       title: title,
       style: style,
-      content: data,
+      content: sanitized,
       mermaid: mermaid
     };
     return mustache.render(template, view);
