@@ -33,9 +33,9 @@ This is a fork of [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-ma
 
 ## Getting Started
 
-**VS Code users** can search for "Markdown PDF" in the Extensions panel or install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=PLACEHOLDER).
+**VS Code users** can search for "Markdown PDF" in the Extensions panel or install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=AUAggy.markdown-pdf).
 
-**VSCodium users** should install from [Open VSX](https://open-vsx.org/extension/PLACEHOLDER).
+**VSCodium users** should install from [Open VSX](https://open-vsx.org/extension/AUAggy/markdown-pdf).
 
 **Manual install:** Download the `.vsix` from the [latest GitHub release](https://github.com/AUAggy/markdown-pdf-revived/releases), then run `Extensions: Install from VSIX` from the command palette.
 
