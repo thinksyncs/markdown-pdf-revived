@@ -38,9 +38,7 @@ Supports the following features
 * [markdown-it-checkbox](https://github.com/mcecot/markdown-it-checkbox)
 * [markdown-it-container](https://github.com/markdown-it/markdown-it-container)
 * [markdown-it-include](https://github.com/camelaissani/markdown-it-include)
-* [PlantUML](https://plantuml.com/)
-  * [markdown-it-plantuml](https://github.com/gmunguia/markdown-it-plantuml)
-* [mermaid](https://mermaid-js.github.io/mermaid/)
+* [mermaid](https://mermaid-js.github.io/mermaid/) - Local rendering, offline-capable
 
 Sample files
  * [pdf](sample/README.pdf)
@@ -64,19 +62,20 @@ OUTPUT
 </div>
 ```
 
-### markdown-it-plantuml
+### mermaid
+
+**Note:** PlantUML has been removed in favor of Mermaid diagrams. Mermaid renders locally (no external server), works offline, and covers most diagram types. See [Migration from PlantUML](#migration-from-plantuml) below.
 
 INPUT
+<pre>
+```mermaid
+stateDiagram
 ```
-@startuml
-Bob -[#red]> Alice : hello
-Alice -[#0000FF]->Bob : ok
-@enduml
-```
+</pre>
 
 OUTPUT
 
-![PlantUML](images/PlantUML.png)
+![mermaid](images/mermaid.png)
 
 ### markdown-it-include
 
@@ -107,23 +106,27 @@ Content of plugins/README.md
 Content of CHANGELOG.md
 ```
 
-### mermaid
+### Migration from PlantUML
 
-INPUT
-<pre>
-```mermaid
-stateDiagram
-    [*] --> First
-    state First {
-        [*] --> second
-        second --> [*]
-    }
-```
-</pre>
+**PlantUML has been removed** from Markdown PDF (Revived) in favor of Mermaid diagrams. 
 
-OUTPUT
+**Why?**
+- PlantUML required an external server (`http://www.plantuml.com/plantuml`) - privacy concern
+- PlantUML didn't work offline
+- 75% of PlantUML issues were unresolved (abandoned by maintainer)
+- Mermaid renders locally, works offline, and covers most diagram types
 
-![mermaid](images/mermaid.png)
+**Migration examples:**
+
+| Diagram Type | PlantUML | Mermaid |
+|-------------|----------|---------|
+| **Sequence** | `@startuml`<br>`Alice -> Bob: Hello`<br>`@enduml` | `sequenceDiagram`<br>`Alice->>Bob: Hello` |
+| **Flowchart** | `@startuml`<br>`start`<br>`:step;`<br>`stop`<br>`@enduml` | `flowchart TD`<br>`A[Start] --> B[Step]` |
+| **State** | `@startuml`<br>`[*] --> State1`<br>`@enduml` | `stateDiagram`<br>`[*] --> State1` |
+| **Class** | `@startuml`<br>`class User`<br>`@enduml` | `classDiagram`<br>`class User` |
+| **Gantt** | `@startuml`<br>`gantt`<br>`@enduml` | `gantt`<br>`title Project` |
+
+**See:** [Mermaid Documentation](https://mermaid.js.org/) for full syntax guide.
 
 ## Install
 
