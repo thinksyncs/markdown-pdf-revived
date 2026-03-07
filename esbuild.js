@@ -15,27 +15,23 @@ const options = {
   format: 'cjs',
   outfile: 'dist/extension.js',
   external: [
+    // Always external — VSCode API is injected by the host
     'vscode',
-    // Large deps loaded at runtime via require() — keep external so
-    // node_modules are used directly (avoids bundling ~5MB into dist)
+    // puppeteer-core: native bindings + complex runtime launcher; must stay external
     'puppeteer-core',
-    'mermaid',
-    'katex',
-    'dompurify',
+    // canvas: optional native addon used by jsdom; not required, but must stay external
+    // if present so esbuild doesn't try to bundle a .node file
+    'canvas',
+    // jsdom: loads its own default-stylesheet.css via fs.readFileSync at module load
+    // time using a __dirname-relative path. When bundled by esbuild, __dirname no
+    // longer points to the jsdom package directory, so the file lookup fails at runtime.
+    // Must stay external so Node resolves it from node_modules with correct __dirname.
     'jsdom',
-    'highlight.js',
-    'markdown-it',
-    'markdown-it-anchor',
-    'markdown-it-checkbox',
-    'markdown-it-container',
-    'markdown-it-emoji',
-    'markdown-it-include',
-    'cheerio',
-    'gray-matter',
-    'mustache',
-    'mkdirp',
-    'rimraf',
-    'emoji-images',
+    // dompurify: used together with jsdom; kept external for consistency.
+    'dompurify',
+    // All other deps are bundled into dist/extension.js to keep the .vsix small.
+    // mermaid.min.js, katex CSS/fonts, highlight.js styles, and emoji-images PNGs
+    // are file-system assets read at runtime and handled via .vscodeignore allowlist.
   ],
   sourcemap: true,
   minify: false,

@@ -14,3 +14,36 @@ tsconfig.json
 work/**
 *.vsix
 *.bat
+
+# Exclude all of node_modules — pure-JS deps are bundled into dist/extension.js
+node_modules/**
+
+# Re-include only the runtime file assets that the extension reads from disk:
+
+# puppeteer-core and its transitive deps (launcher, CDP, browser binaries discovery)
+!node_modules/puppeteer-core/**
+!node_modules/chromium-bidi/**
+!node_modules/devtools-protocol/**
+!node_modules/tldts/**
+!node_modules/tldts-core/**
+!node_modules/zod/**
+!node_modules/@puppeteer/**
+
+# jsdom: must stay external (loads default-stylesheet.css via __dirname at runtime)
+!node_modules/jsdom/**
+
+# dompurify: used with jsdom for sanitization; kept external alongside jsdom
+!node_modules/dompurify/**
+
+# mermaid: only the pre-built browser bundle (inlined into HTML at render time)
+!node_modules/mermaid/dist/mermaid.min.js
+
+# katex: CSS and fonts (linked via file:// so font paths resolve in Puppeteer)
+!node_modules/katex/dist/katex.min.css
+!node_modules/katex/dist/fonts/**
+
+# highlight.js: CSS theme files (linked via file://)
+!node_modules/highlight.js/styles/**
+
+# emoji-images: PNG image files (loaded by path at runtime)
+!node_modules/emoji-images/pngs/**
