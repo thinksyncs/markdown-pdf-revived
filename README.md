@@ -8,7 +8,7 @@
   <a href="https://marketplace.visualstudio.com/items?itemName=AUAggy.markdown-pdf-revived"><img src="https://img.shields.io/visual-studio-marketplace/v/AUAggy.markdown-pdf-revived?label=VS%20Code&color=0078d4" alt="VS Code Marketplace"></a>
   <a href="https://open-vsx.org/extension/AUAggy/markdown-pdf-revived"><img src="https://img.shields.io/open-vsx/v/AUAggy/markdown-pdf-revived?label=Open%20VSX&color=c160ef" alt="Open VSX"></a>
   <a href="https://github.com/AUAggy/markdown-pdf-revived/releases"><img src="https://img.shields.io/github/v/release/AUAggy/markdown-pdf-revived?label=Release&color=e53e3e" alt="GitHub Release"></a>
-  <a href="https://github.com/AUAggy/markdown-pdf-revived?tab=License-1-ov-file"><img src="https://img.shields.io/github/license/AUAggy/markdown-pdf-revived?color=555" alt="MIT License"></a>
+  <a href="LICENSE.txt"><img src="https://img.shields.io/github/license/AUAggy/markdown-pdf-revived?color=555" alt="MIT License"></a>
 </p>
 
 <p align="center">

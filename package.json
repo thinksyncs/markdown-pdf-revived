@@ -14,18 +14,16 @@
     "vscode": "^1.109.0"
   },
   "categories": [
+    "Formatters",
     "Other"
   ],
   "license": "SEE LICENSE IN LICENSE.txt",
   "keywords": [
     "markdown",
     "pdf",
-    "html",
     "export",
     "mermaid",
-    "katex",
-    "offline",
-    "privacy"
+    "converter"
   ],
   "repository": {
     "type": "git",
