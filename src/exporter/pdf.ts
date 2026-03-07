@@ -4,7 +4,7 @@ import { config } from '../config/settings';
 import { isExistsPath, deleteFile } from '../utils/file';
 import { showErrorMessage } from '../utils/logger';
 import { exportHtml } from './html';
-import { getOutputDir } from '../template/page';
+import { getOutputDir, readUserStylesAsText } from '../template/page';
 
 // Set to true once Chrome/Chromium is confirmed present at activation time.
 let chromiumReady = false;
@@ -126,11 +126,13 @@ export async function exportPdf(
 
         if (type === 'pdf') {
           const margin = config.margin(uri);
+          const userCss = readUserStylesAsText(uri);
+          const headerFooterStyle = userCss ? `<style>${userCss}</style>` : '';
           await page.pdf({
             path: exportFilename,
             displayHeaderFooter: config.displayHeaderFooter(uri),
-            headerTemplate: transformTemplate(config.headerTemplate(uri)),
-            footerTemplate: transformTemplate(config.footerTemplate(uri)),
+            headerTemplate: headerFooterStyle + transformTemplate(config.headerTemplate(uri)),
+            footerTemplate: headerFooterStyle + transformTemplate(config.footerTemplate(uri)),
             printBackground: config.printBackground(uri),
             landscape: config.orientation(uri) === 'landscape',
             format: config.format(uri) as 'A4',

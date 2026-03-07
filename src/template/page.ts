@@ -85,6 +85,19 @@ export function readStyles(uri: vscode.Uri): string {
   }
 }
 
+export function readUserStylesAsText(uri: vscode.Uri): string {
+  let css = '';
+  for (const href of config.styles(uri)) {
+    try {
+      const resolved = resolveStylePath(href, uri);
+      css += fs.readFileSync(resolved, 'utf8') + '\n';
+    } catch {
+      // skip files that cannot be read
+    }
+  }
+  return css;
+}
+
 export function makeHtml(content: string, uri: vscode.Uri, frontmatterTitle?: string): string | null {
   try {
     const style = readStyles(uri);
