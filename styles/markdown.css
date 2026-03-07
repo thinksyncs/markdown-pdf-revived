@@ -186,14 +186,24 @@ img {
 
 /* ── Code — Inline ───────────────────────────────────────────── */
 
+/* Inline code */
 code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 0.875em;
-  background: #f3f4f6;
-  color: #1f2937;
-  padding: 0.15em 0.4em;
-  border-radius: 4px;
-  border: 1px solid #e5e7eb;
+  background-color: #f6f8fa;
+  color: #d63333;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 87.5%;
+  font-family: ui-monospace, 'SFMono-Regular', 'Menlo', 'Consolas', monospace;
+}
+
+/* Do not double-style code inside pre blocks */
+pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  display: block;
 }
 
 /* ── Code — Blocks ───────────────────────────────────────────── */
@@ -202,18 +212,4 @@ pre {
   margin: 0 0 1.5em 0;
   border-radius: 6px;
   overflow: auto;
-}
-
-pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 0.875em;
-  color: inherit;
-  border-radius: 0;
-}
-
-/* Inline code inside pre should not inherit inline styling */
-pre > code {
-  display: block;
 }
