@@ -17,7 +17,7 @@
 - [x] Remove PNG/JPEG export (lean PDF/HTML focus)
 - [x] Remove PlantUML (privacy/offline)
 - [x] Remove Chromium auto-download (use system Chrome)
-- [ ] Remove Japanese README (`README.ja.md`) — fork is English-only, no-nonsense single-purpose tool
+- [x] Remove Japanese README (`README.ja.md`) — fork is English-only, no-nonsense single-purpose tool
 
 ### 1.1 Repository Setup
 
