@@ -184,6 +184,24 @@ cf7fb81 docs: add project tracking documentation
 
 ---
 
+### Session 3: 7 March 2026 — KaTeX Block Math Fix
+
+**Status:** Complete
+
+#### Accomplished
+1. **Fixed `markdownItKaTeX` block rule** in `extension.js`
+   - Root cause: all display math in `math.md` uses single-line `$$formula$$`; the block rule only handled multi-line format (opening `$$` on one line, closing `$$` on a subsequent line)
+   - Node test confirmed: both single-line and multi-line failed to match before fix
+   - Rewrote block rule to detect closing `$$` on the same line first (single-line path), then fall through to multi-line search
+   - Node test confirmed both cases pass after fix
+2. **Fixed `tables.md`** — replaced confusing backtick-wrapped `$...$` literal in KaTeX row with plain description text
+3. Updated `docs/todo.md` and `docs/CLAUDE.md`
+
+#### Key Insight
+The block rule had `if (max - pos < 4 ...)` guard (minimum `$$x$$` is 6 chars but `$$$$` is 4), and the single-line close detection uses `lineContent.indexOf('$$')` on the content after the opening `$$`.
+
+---
+
 ## Project Status Dashboard
 
 | Phase | Status | Branch |
@@ -227,5 +245,5 @@ cf7fb81 docs: add project tracking documentation
 ---
 
 **Last Updated:** 7 March 2026
-**Current Phase:** 1.6 Verification (in progress)
+**Current Phase:** Phase 1 Complete
 **Next Phase:** 2.1 — TypeScript setup and esbuild build system

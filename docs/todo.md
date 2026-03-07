@@ -3,7 +3,7 @@
 **Project:** Modernize abandoned vscode-markdown-pdf extension
 **Tagline:** A privacy-first, offline-capable Markdown to PDF converter for VSCode
 **Started:** 7 March 2026
-**Status:** Phase 1.6 Complete - Full Verification Pass; Phase 1 Done
+**Status:** Phase 1.6 Complete - Full Verification Pass + KaTeX block math fix; Phase 1 Done
 **Last Updated:** 7 March 2026
 
 ---
@@ -11,6 +11,13 @@
 ## Phase 1: Critical Fixes (Week 1-2)
 
 **Goal:** Make the extension functional and secure again.
+
+### 1.0 Scope Decisions
+
+- [x] Remove PNG/JPEG export (lean PDF/HTML focus)
+- [x] Remove PlantUML (privacy/offline)
+- [x] Remove Chromium auto-download (use system Chrome)
+- [ ] Remove Japanese README (`README.ja.md`) — fork is English-only, no-nonsense single-purpose tool
 
 ### 1.1 Repository Setup
 
@@ -72,6 +79,8 @@
   - Avoids `markdown-it-katex` (XSS CVE, no fix) and `@iktakahiro/markdown-it-katex` (bundles vulnerable katex)
   - Supports `$...$` inline and `$$...$$` display math
 - [x] KaTeX CSS linked via absolute `file://` path (preserves font resolution)
+- [x] Fix `markdownItKaTeX` block rule — single-line `$$formula$$` was not matched; rewritten to handle both single-line and multi-line `$$...$$` display math
+- [x] Fix `tables.md` confusing KaTeX row description (replaced `\`$...$\`` literal with plain text)
 - [ ] Test: math renders correctly in PDF (requires VSCode — use test-docs/math.md)
 - [ ] Test: math renders correctly in HTML (requires VSCode — use test-docs/math.md)
 

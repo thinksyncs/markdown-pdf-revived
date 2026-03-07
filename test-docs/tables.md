@@ -34,7 +34,7 @@
 
 | Feature | Description | Enabled |
 |---------|-------------|---------|
-| **KaTeX math** | `$...$` and `$$...$$` syntax | `true` by default |
+| **KaTeX math** | Inline and display math rendering | `true` by default |
 | *Mermaid diagrams* | Rendered locally, offline | Always on |
 | ~~PlantUML~~ | ~~External server~~ | ~~Removed~~ |
 | `highlight.js` | 80+ syntax themes | `true` by default |

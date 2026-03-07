@@ -1,8 +1,6 @@
-# Markdown PDF
+# Markdown PDF (Revived)
 
-This extension converts Markdown files to pdf, html, png or jpeg files.
-
-[Japanese README](README.ja.md)
+A privacy-first, offline-capable Markdown to PDF/HTML converter for VSCode.
 
 ## Table of Contents
 <!-- TOC depthFrom:2 depthTo:2 updateOnSave:false -->
@@ -43,8 +41,6 @@ Supports the following features
 Sample files
  * [pdf](sample/README.pdf)
  * [html](sample/README.html)
- * [png](sample/README.png)
- * [jpeg](sample/README.jpeg)
 
 ### markdown-it-container
 
@@ -130,15 +126,11 @@ Content of CHANGELOG.md
 
 ## Install
 
-Chromium download starts automatically when Markdown PDF is installed and Markdown file is first opened with Visual Studio Code.
+This extension uses your system-installed Chrome or Chromium. No download is required.
 
-However, it is time-consuming depending on the environment because of its large size (~ 170Mb Mac, ~ 282Mb Linux, ~ 280Mb Win).
+The extension automatically detects Chrome in the standard installation locations on macOS, Linux, and Windows. If Chrome is not found, an error is shown with instructions.
 
-During downloading, the message `Installing Chromium` is displayed in the status bar.
-
-If you are behind a proxy, set the `http.proxy` option to settings.json and restart Visual Studio Code.
-
-If the download is not successful or you want to avoid downloading every time you upgrade Markdown PDF, please specify the installed [Chrome](https://www.google.co.jp/chrome/) or 'Chromium' with [markdown-pdf.executablePath](#markdown-pdfexecutablepath) option.
+To use a custom Chrome binary, set `markdown-pdf.executablePath` in your settings.
 
 <div class="page"/>
 
@@ -152,9 +144,7 @@ If the download is not successful or you want to avoid downloading every time yo
    * `markdown-pdf: Export (settings.json)`
    * `markdown-pdf: Export (pdf)`
    * `markdown-pdf: Export (html)`
-   * `markdown-pdf: Export (png)`
-   * `markdown-pdf: Export (jpeg)`
-   * `markdown-pdf: Export (all: pdf, html, png, jpeg)`
+   * `markdown-pdf: Export (all: pdf, html)`
 
 ![usage1](images/usage1.gif)
 
@@ -165,9 +155,7 @@ If the download is not successful or you want to avoid downloading every time yo
    * `markdown-pdf: Export (settings.json)`
    * `markdown-pdf: Export (pdf)`
    * `markdown-pdf: Export (html)`
-   * `markdown-pdf: Export (png)`
-   * `markdown-pdf: Export (jpeg)`
-   * `markdown-pdf: Export (all: pdf, html, png, jpeg)`
+   * `markdown-pdf: Export (all: pdf, html)`
 
 ![usage2](images/usage2.gif)
 
@@ -222,31 +210,19 @@ If the download is not successful or you want to avoid downloading every time yo
 ||[markdown-pdf.margin.bottom](#markdown-pdfmarginbottom)|resource|
 ||[markdown-pdf.margin.right](#markdown-pdfmarginright)|resource|
 ||[markdown-pdf.margin.left](#markdown-pdfmarginleft)|resource|
-|[PNG JPEG options](#png-jpeg-options)|[markdown-pdf.quality](#markdown-pdfquality)| |
-||[markdown-pdf.clip.x](#markdown-pdfclipx)| |
-||[markdown-pdf.clip.y](#markdown-pdfclipy)| |
-||[markdown-pdf.clip.width](#markdown-pdfclipwidth)| |
-||[markdown-pdf.clip.height](#markdown-pdfclipheight)| |
-||[markdown-pdf.omitBackground](#markdown-pdfomitbackground)| |
-|[PlantUML options](#plantuml-options)|[markdown-pdf.plantumlOpenMarker](#markdown-pdfplantumlopenmarker)| |
-||[markdown-pdf.plantumlCloseMarker](#markdown-pdfplantumlclosemarker)| |
-||[markdown-pdf.plantumlServer](#markdown-pdfplantumlserver)| |
 |[markdown-it-include options](#markdown-it-include-options)|[markdown-pdf.markdown-it-include.enable](#markdown-pdfmarkdown-it-includeenable)| |
-|[mermaid options](#mermaid-options)|[markdown-pdf.mermaidServer](#markdown-pdfmermaidserver)| |
 
 ### Save options
 
 #### `markdown-pdf.type`
-  - Output format: pdf, html, png, jpeg
+  - Output format: pdf, html
   - Multiple output formats support
   - Default: pdf
 
 ```javascript
 "markdown-pdf.type": [
   "pdf",
-  "html",
-  "png",
-  "jpeg"
+  "html"
 ],
 ```
 
@@ -497,72 +473,11 @@ If the download is not successful or you want to avoid downloading every time yo
 "markdown-pdf.margin.left": "1cm",
 ```
 
-### PNG, JPEG options
-
-  - png and jpeg only. [puppeteer page.screenshot options](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagescreenshotoptions)
-
-#### `markdown-pdf.quality`
-  - jpeg only. The quality of the image, between 0-100. Not applicable to png images
-
-```javascript
-"markdown-pdf.quality": 100,
-```
-
-#### `markdown-pdf.clip.x`
-#### `markdown-pdf.clip.y`
-#### `markdown-pdf.clip.width`
-#### `markdown-pdf.clip.height`
-  - An object which specifies clipping region of the page
-  - number
-
-```javascript
-//  x-coordinate of top-left corner of clip area
-"markdown-pdf.clip.x": 0,
-
-// y-coordinate of top-left corner of clip area
-"markdown-pdf.clip.y": 0,
-
-// width of clipping area
-"markdown-pdf.clip.width": 1000,
-
-// height of clipping area
-"markdown-pdf.clip.height": 1000,
-```
-
-#### `markdown-pdf.omitBackground`
-  - Hides default white background and allows capturing screenshots with transparency
-  - boolean. Default: false
-
-### PlantUML options
-
-#### `markdown-pdf.plantumlOpenMarker`
-  - Oppening delimiter used for the plantuml parser.
-  - Default: @startuml
-
-#### `markdown-pdf.plantumlCloseMarker`
-  - Closing delimiter used for the plantuml parser.
-  - Default: @enduml
-
-#### `markdown-pdf.plantumlServer`
-  - Plantuml server. e.g. http://localhost:8080
-  - Default: http://www.plantuml.com/plantuml
-  - For example, to run Plantuml Server locally [#139](https://github.com/yzane/vscode-markdown-pdf/issues/139) :
-    ```
-    docker run -d -p 8080:8080 plantuml/plantuml-server:jetty
-    ```
-    [plantuml/plantuml-server - Docker Hub](https://hub.docker.com/r/plantuml/plantuml-server/)
-
 ### markdown-it-include options
 
 #### `markdown-pdf.markdown-it-include.enable`
   - Enable markdown-it-include.
   - boolean. Default: true
-
-### mermaid options
-
-#### `markdown-pdf.mermaidServer`
-  - mermaid server
-  - Default: https://unpkg.com/mermaid/dist/mermaid.min.js
 
 <div class="page"/>
 
@@ -610,7 +525,7 @@ Please use the following to insert a page break.
 ## Known Issues
 
 ### `markdown-pdf.styles` option
-* Online CSS (https://xxx/xxx.css) is applied correctly for JPG and PNG, but problems occur with PDF. [#67](https://github.com/yzane/vscode-markdown-pdf/issues/67)
+* Online CSS (https://xxx/xxx.css) may cause problems with PDF output. Prefer local stylesheets. [#67](https://github.com/yzane/vscode-markdown-pdf/issues/67)
 
 
 ## [Release Notes](CHANGELOG.md)
@@ -630,19 +545,19 @@ MIT
 
 
 ## Special thanks
-* [GoogleChrome/puppeteer](https://github.com/GoogleChrome/puppeteer)
+* [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)
 * [markdown-it/markdown-it](https://github.com/markdown-it/markdown-it)
 * [mcecot/markdown-it-checkbox](https://github.com/mcecot/markdown-it-checkbox)
-* [leff/markdown-it-named-headers](https://github.com/leff/markdown-it-named-headers)
+* [valeriangalliat/markdown-it-anchor](https://github.com/valeriangalliat/markdown-it-anchor)
 * [markdown-it/markdown-it-emoji](https://github.com/markdown-it/markdown-it-emoji)
-* [HenrikJoreteg/emoji-images](https://github.com/HenrikJoreteg/emoji-images)
 * [isagalaev/highlight.js](https://github.com/isagalaev/highlight.js)
 * [cheeriojs/cheerio](https://github.com/cheeriojs/cheerio)
 * [janl/mustache.js](https://github.com/janl/mustache.js)
 * [markdown-it/markdown-it-container](https://github.com/markdown-it/markdown-it-container)
-* [gmunguia/markdown-it-plantuml](https://github.com/gmunguia/markdown-it-plantuml)
 * [camelaissani/markdown-it-include](https://github.com/camelaissani/markdown-it-include)
 * [mermaid-js/mermaid](https://github.com/mermaid-js/mermaid)
+* [KaTeX/KaTeX](https://github.com/KaTeX/KaTeX)
+* [cure53/DOMPurify](https://github.com/cure53/DOMPurify)
 * [jonschlinkert/gray-matter](https://github.com/jonschlinkert/gray-matter)
 
 and

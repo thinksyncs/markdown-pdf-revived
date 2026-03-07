@@ -316,12 +316,25 @@ function markdownItKaTeX(md) {
     return true;
   });
 
-  // Block math: $$...$$
+  // Block math: $$...$$ (single-line or multi-line)
   md.block.ruler.before('fence', 'math_block', function (state, startLine, endLine, silent) {
     var pos = state.bMarks[startLine] + state.tShift[startLine];
     var max = state.eMarks[startLine];
-    if (max - pos < 2 || state.src.slice(pos, pos + 2) !== '$$') return false;
-    var firstLineContent = state.src.slice(pos + 2, max).trim();
+    if (max - pos < 4 || state.src.slice(pos, pos + 2) !== '$$') return false;
+    // Single-line: $$formula$$
+    var lineContent = state.src.slice(pos + 2, max);
+    var closeIdx = lineContent.indexOf('$$');
+    if (closeIdx !== -1) {
+      if (silent) return true;
+      var token = state.push('math_block', '', 0);
+      token.block = true;
+      token.markup = '$$';
+      token.content = lineContent.slice(0, closeIdx).trim();
+      state.line = startLine + 1;
+      return true;
+    }
+    // Multi-line: $$ on opening line, $$ on closing line
+    var firstLineContent = lineContent.trim();
     var found = false;
     var nextLine = startLine;
     while (nextLine < endLine) {
