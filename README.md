@@ -1,549 +1,219 @@
-# Markdown PDF (Revived)
+# Markdown PDF
 
-A privacy-first, offline-capable Markdown to PDF/HTML converter for VSCode.
+Converts Markdown files to PDF or HTML from within VSCode. All rendering is local; no external servers, no telemetry, Chrome required.
 
-## Table of Contents
-<!-- TOC depthFrom:2 depthTo:2 updateOnSave:false -->
+## Requirements
 
-- [Features](#features)
-- [Install](#install)
-- [Usage](#usage)
-- [Extension Settings](#extension-settings)
-- [Options](#options)
-- [FAQ](#faq)
-- [Known Issues](#known-issues)
-- [Release Notes](#release-notes)
-- [License](#license)
-- [Special thanks](#special-thanks)
+Chrome or Chromium must be installed. The extension detects it automatically at standard installation paths on macOS, Linux, and Windows.
 
-<!-- /TOC -->
+To use a non-standard Chrome binary:
 
-<div class="page"/>
+```json
+"markdown-pdf.executablePath": "/path/to/chrome"
+```
+
+Restart VSCode after changing this setting.
+
+## What Changed in v2
+
+This is a fork of [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-markdown-pdf), which had no maintainer activity since late 2023. See [CHANGELOG.md](CHANGELOG.md) for the full list of changes and [MIGRATION.md](MIGRATION.md) for upgrade instructions.
+
+**Removed:** PlantUML (sent source to plantuml.com), PNG/JPEG export, Chromium auto-download, 10 settings.
+
+**Added:** KaTeX math, DOMPurify sanitization (CVE-2024-7739), Mermaid async render fix, TypeScript rewrite.
+
+**Changed:** Default margins, highlight theme (github.css), header/footer off by default.
+
+| Area | Detail |
+|---|---|
+| PlantUML | Removed; diagram source was sent to `plantuml.com` on each render. Use Mermaid instead. |
+| PNG/JPEG export | Removed. PDF and HTML output only. |
+| Chromium auto-download | Removed. The API (`createBrowserFetcher`) was dropped in puppeteer v20. |
+| 10 settings | Removed or folded into fixed behavior. See [MIGRATION.md](MIGRATION.md). |
+
+## Usage
+
+### Command Palette
+
+1. Open a Markdown file.
+2. Press `F1` or `Ctrl+Shift+P`.
+3. Type `export` and select a command:
+   - `Markdown PDF: Export (pdf)`
+   - `Markdown PDF: Export (html)`
+   - `Markdown PDF: Export (all: pdf, html)`
+   - `Markdown PDF: Export (settings.json)`
+
+### Right-click Menu
+
+1. Open a Markdown file.
+2. Right-click in the editor.
+3. Select a command from the `markdown-pdf` group.
+
+### Auto-convert on Save
+
+1. Add `"markdown-pdf.convertOnSave": true` to `settings.json`.
+2. Restart VSCode.
+3. Open a Markdown file. The extension converts it on each save.
+
+To exclude specific files from auto-convert, add filename patterns to `markdown-pdf.convertOnSaveExclude`.
 
 ## Features
 
-Supports the following features
-* [Syntax highlighting](https://highlightjs.org/static/demo/)
-* [emoji](https://www.webfx.com/tools/emoji-cheat-sheet/)
-* [markdown-it-checkbox](https://github.com/mcecot/markdown-it-checkbox)
-* [markdown-it-container](https://github.com/markdown-it/markdown-it-container)
-* [markdown-it-include](https://github.com/camelaissani/markdown-it-include)
-* [mermaid](https://mermaid-js.github.io/mermaid/) - Local rendering, offline-capable
+- Syntax highlighting via [highlight.js](https://highlightjs.org/) with 80+ themes
+- Emoji support
+- KaTeX math: `$...$` for inline, `$$...$$` for display
+- Mermaid diagrams, rendered locally with no external calls
+- File includes via [markdown-it-include](https://github.com/camelaissani/markdown-it-include)
+- Custom div containers via [markdown-it-container](https://github.com/markdown-it/markdown-it-container)
+- Checkbox and task list support via [markdown-it-checkbox](https://github.com/mcecot/markdown-it-checkbox)
+- DOMPurify sanitization of rendered HTML before PDF/HTML output
 
-### markdown-it-container
+## Settings
 
-INPUT
+### Output
+
+| Setting | Default | Description |
+|---|---|---|
+| `markdown-pdf.type` | `["pdf"]` | Output formats. Accepts `pdf`, `html`, or both. |
+| `markdown-pdf.convertOnSave` | `false` | Convert on save. Requires VSCode restart to take effect. |
+| `markdown-pdf.convertOnSaveExclude` | `[]` | Filename patterns to skip during auto-convert. |
+| `markdown-pdf.outputDirectory` | `""` | Directory for output files. Relative paths resolve from the workspace root. |
+| `markdown-pdf.executablePath` | `""` | Path to a Chrome or Chromium binary. Leave empty to use auto-detection. |
+
+### Styles
+
+| Setting | Default | Description |
+|---|---|---|
+| `markdown-pdf.styles` | `[]` | Paths to additional CSS files. All `\` must be written as `\\` on Windows. |
+| `markdown-pdf.highlight` | `true` | Enable syntax highlighting. |
+| `markdown-pdf.highlightStyle` | `"github.css"` | highlight.js theme. See [highlight.js demo](https://highlightjs.org/static/demo/). |
+
+### Markdown
+
+| Setting | Default | Description |
+|---|---|---|
+| `markdown-pdf.breaks` | `false` | Treat newlines as `<br>` tags. |
+| `markdown-pdf.emoji` | `true` | Render emoji shortcodes. |
+| `markdown-pdf.math` | `true` | Enable KaTeX math rendering. |
+
+### PDF
+
+| Setting | Default | Description |
+|---|---|---|
+| `markdown-pdf.displayHeaderFooter` | `false` | Show header and footer in PDF output. |
+| `markdown-pdf.headerTemplate` | *(title + date)* | HTML template for the PDF header. |
+| `markdown-pdf.footerTemplate` | *(page / total)* | HTML template for the PDF footer. |
+| `markdown-pdf.printBackground` | `true` | Print background graphics. |
+| `markdown-pdf.orientation` | `"portrait"` | Page orientation: `portrait` or `landscape`. |
+| `markdown-pdf.format` | `"A4"` | Paper size: Letter, Legal, Tabloid, Ledger, A0–A6. |
+| `markdown-pdf.margin.top` | `"2cm"` | Top margin. Units: mm, cm, in, px. |
+| `markdown-pdf.margin.bottom` | `"2cm"` | Bottom margin. Units: mm, cm, in, px. |
+| `markdown-pdf.margin.right` | `"2.5cm"` | Right margin. Units: mm, cm, in, px. |
+| `markdown-pdf.margin.left` | `"2.5cm"` | Left margin. Units: mm, cm, in, px. |
+
+Header and footer templates support these tokens:
+
+| Token | Value |
+|---|---|
+| `<span class='title'></span>` | Markdown filename |
+| `<span class='pageNumber'></span>` | Current page number |
+| `<span class='totalPages'></span>` | Total pages |
+| `%%ISO-DATE%%` | Date in `YYYY-MM-DD` format |
+| `%%ISO-DATETIME%%` | Date and time in `YYYY-MM-DD hh:mm:ss` format |
+| `%%ISO-TIME%%` | Time in `hh:mm:ss` format |
+
+## Mermaid Diagrams
+
+Mermaid diagrams render locally with no external server calls. All diagram types supported by Mermaid work, including flowcharts, sequence diagrams, class diagrams, Gantt charts, and state diagrams.
+
+~~~markdown
+```mermaid
+flowchart TD
+    A[Start] --> B{Decision}
+    B -->|Yes| C[Do the thing]
+    B -->|No| D[Skip it]
+    C --> E[End]
+    D --> E
+```
+~~~
+
+PlantUML has been removed. It sent diagram source to `plantuml.com` on each render. For migration examples and equivalent Mermaid syntax, see [MIGRATION.md](MIGRATION.md).
+
+## Custom Containers
+
+The [markdown-it-container](https://github.com/markdown-it/markdown-it-container) plugin wraps content in named `<div>` elements. Style them with a custom CSS file.
+
+Input:
+
 ```
 ::: warning
 *here be dragons*
 :::
 ```
 
-OUTPUT
-``` html
+Output:
+
+```html
 <div class="warning">
 <p><em>here be dragons</em></p>
 </div>
 ```
 
-### mermaid
+## File Includes
 
-**Note:** PlantUML has been removed in favor of Mermaid diagrams. Mermaid renders locally (no external server), works offline, and covers most diagram types. See [Migration from PlantUML](#migration-from-plantuml) below.
+The [markdown-it-include](https://github.com/camelaissani/markdown-it-include) plugin inserts the contents of another Markdown file at the include site. Paths are relative to the file containing the include directive.
 
-INPUT
-<pre>
-```mermaid
-stateDiagram
-```
-</pre>
+Syntax: `:[display text](relative-path-to-file.md)`
 
-OUTPUT
-
-
-### markdown-it-include
-
-Include markdown fragment files: `:[alternate-text](relative-path-to-file.md)`.
+Example:
 
 ```
-├── [plugins]
-│  └── README.md
-├── CHANGELOG.md
-└── README.md
-```
-
-INPUT
-```
-README Content
-
 :[Plugins](./plugins/README.md)
-
 :[Changelog](CHANGELOG.md)
 ```
 
-OUTPUT
-```
-Content of README.md
+The output contains the rendered content of each included file in sequence.
 
-Content of plugins/README.md
+## Page Breaks
 
-Content of CHANGELOG.md
-```
+Insert a page break with:
 
-### Migration from PlantUML
-
-**PlantUML has been removed** from Markdown PDF (Revived) in favor of Mermaid diagrams. 
-
-**Why?**
-- PlantUML required an external server (`http://www.plantuml.com/plantuml`) - privacy concern
-- PlantUML didn't work offline
-- 75% of PlantUML issues were unresolved (abandoned by maintainer)
-- Mermaid renders locally, works offline, and covers most diagram types
-
-**Migration examples:**
-
-| Diagram Type | PlantUML | Mermaid |
-|-------------|----------|---------|
-| **Sequence** | `@startuml`<br>`Alice -> Bob: Hello`<br>`@enduml` | `sequenceDiagram`<br>`Alice->>Bob: Hello` |
-| **Flowchart** | `@startuml`<br>`start`<br>`:step;`<br>`stop`<br>`@enduml` | `flowchart TD`<br>`A[Start] --> B[Step]` |
-| **State** | `@startuml`<br>`[*] --> State1`<br>`@enduml` | `stateDiagram`<br>`[*] --> State1` |
-| **Class** | `@startuml`<br>`class User`<br>`@enduml` | `classDiagram`<br>`class User` |
-| **Gantt** | `@startuml`<br>`gantt`<br>`@enduml` | `gantt`<br>`title Project` |
-
-**See:** [Mermaid Documentation](https://mermaid.js.org/) for full syntax guide.
-
-## Install
-
-This extension uses your system-installed Chrome or Chromium. No download is required.
-
-The extension automatically detects Chrome in the standard installation locations on macOS, Linux, and Windows. If Chrome is not found, an error is shown with instructions.
-
-To use a custom Chrome binary, set `markdown-pdf.executablePath` in your settings.
-
-<div class="page"/>
-
-## Usage
-
-### Command Palette
-
-1. Open the Markdown file
-1. Press `F1` or `Ctrl+Shift+P`
-1. Type `export` and select below
-   * `markdown-pdf: Export (settings.json)`
-   * `markdown-pdf: Export (pdf)`
-   * `markdown-pdf: Export (html)`
-   * `markdown-pdf: Export (all: pdf, html)`
-
-
-### Menu
-
-1. Open the Markdown file
-1. Right click and select below
-   * `markdown-pdf: Export (settings.json)`
-   * `markdown-pdf: Export (pdf)`
-   * `markdown-pdf: Export (html)`
-   * `markdown-pdf: Export (all: pdf, html)`
-
-
-### Auto convert
-
-1. Add `"markdown-pdf.convertOnSave": true` option to **settings.json**
-1. Restart Visual Studio Code
-1. Open the Markdown file
-1. Auto convert on save
-
-## Extension Settings
-
-[Visual Studio Code User and Workspace Settings](https://code.visualstudio.com/docs/customization/userandworkspace)
-
-1. Select **File > Preferences > UserSettings or Workspace Settings**
-1. Find markdown-pdf settings in the **Default Settings**
-1. Copy `markdown-pdf.*` settings
-1. Paste to the **settings.json**, and change the value
-
-
-## Options
-
-### List
-
-|Category|Option name|[Configuration scope](https://code.visualstudio.com/api/references/contribution-points#Configuration-property-schema)|
-|:---|:---|:---|
-|[Save options](#save-options)|[markdown-pdf.type](#markdown-pdftype)| |
-||[markdown-pdf.convertOnSave](#markdown-pdfconvertonsave)| |
-||[markdown-pdf.convertOnSaveExclude](#markdown-pdfconvertonsaveexclude)| |
-||[markdown-pdf.outputDirectory](#markdown-pdfoutputdirectory)| |
-||[markdown-pdf.outputDirectoryRelativePathFile](#markdown-pdfoutputdirectoryrelativepathfile)| |
-|[Styles options](#styles-options)|[markdown-pdf.styles](#markdown-pdfstyles)| |
-||[markdown-pdf.stylesRelativePathFile](#markdown-pdfstylesrelativepathfile)| |
-||[markdown-pdf.includeDefaultStyles](#markdown-pdfincludedefaultstyles)| |
-|[Syntax highlight options](#syntax-highlight-options)|[markdown-pdf.highlight](#markdown-pdfhighlight)| |
-||[markdown-pdf.highlightStyle](#markdown-pdfhighlightstyle)| |
-|[Markdown options](#markdown-options)|[markdown-pdf.breaks](#markdown-pdfbreaks)| |
-|[Emoji options](#emoji-options)|[markdown-pdf.emoji](#markdown-pdfemoji)| |
-|[Configuration options](#configuration-options)|[markdown-pdf.executablePath](#markdown-pdfexecutablepath)| |
-|[Common Options](#common-options)|[markdown-pdf.scale](#markdown-pdfscale)| |
-|[PDF options](#pdf-options)|[markdown-pdf.displayHeaderFooter](#markdown-pdfdisplayheaderfooter)|resource|
-||[markdown-pdf.headerTemplate](#markdown-pdfheadertemplate)|resource|
-||[markdown-pdf.footerTemplate](#markdown-pdffootertemplate)|resource|
-||[markdown-pdf.printBackground](#markdown-pdfprintbackground)|resource|
-||[markdown-pdf.orientation](#markdown-pdforientation)|resource|
-||[markdown-pdf.pageRanges](#markdown-pdfpageranges)|resource|
-||[markdown-pdf.format](#markdown-pdfformat)|resource|
-||[markdown-pdf.width](#markdown-pdfwidth)|resource|
-||[markdown-pdf.height](#markdown-pdfheight)|resource|
-||[markdown-pdf.margin.top](#markdown-pdfmargintop)|resource|
-||[markdown-pdf.margin.bottom](#markdown-pdfmarginbottom)|resource|
-||[markdown-pdf.margin.right](#markdown-pdfmarginright)|resource|
-||[markdown-pdf.margin.left](#markdown-pdfmarginleft)|resource|
-|[markdown-it-include options](#markdown-it-include-options)|[markdown-pdf.markdown-it-include.enable](#markdown-pdfmarkdown-it-includeenable)| |
-
-### Save options
-
-#### `markdown-pdf.type`
-  - Output format: pdf, html
-  - Multiple output formats support
-  - Default: pdf
-
-```javascript
-"markdown-pdf.type": [
-  "pdf",
-  "html"
-],
-```
-
-#### `markdown-pdf.convertOnSave`
-  - Enable Auto convert on save
-  - boolean. Default: false
-  - To apply the settings, you need to restart Visual Studio Code
-
-#### `markdown-pdf.convertOnSaveExclude`
-  - Excluded file name of convertOnSave option
-
-```javascript
-"markdown-pdf.convertOnSaveExclude": [
-  "^work",
-  "work.md$",
-  "work|test",
-  "[0-9][0-9][0-9][0-9]-work",
-  "work\\test"  // All '\' need to be written as '\\' (Windows)
-],
-```
-
-#### `markdown-pdf.outputDirectory`
-  - Output Directory
-  - All `\` need to be written as `\\` (Windows)
-
-```javascript
-"markdown-pdf.outputDirectory": "C:\\work\\output",
-```
-
-  - Relative path
-    - If you open the `Markdown file`, it will be interpreted as a relative path from the file
-    - If you open a `folder`, it will be interpreted as a relative path from the root folder
-    - If you open the `workspace`, it will be interpreted as a relative path from the each root folder
-      - See [Multi-root Workspaces](https://code.visualstudio.com/docs/editor/multi-root-workspaces)
-
-```javascript
-"markdown-pdf.outputDirectory": "output",
-```
-
-  - Relative path (home directory)
-    - If path starts with  `~`, it will be interpreted as a relative path from the home directory
-
-```javascript
-"markdown-pdf.outputDirectory": "~/output",
-```
-
-  - If you set a directory with a `relative path`, it will be created if the directory does not exist
-  - If you set a directory with an `absolute path`, an error occurs if the directory does not exist
-
-#### `markdown-pdf.outputDirectoryRelativePathFile`
-  - If `markdown-pdf.outputDirectoryRelativePathFile` option is set to `true`, the relative path set with [markdown-pdf.outputDirectory](#markdown-pdfoutputDirectory) is interpreted as relative from the file
-  - It can be used to avoid relative paths from folders and workspaces
-  - boolean. Default: false
-
-### Styles options
-
-#### `markdown-pdf.styles`
-  - A list of local paths to the stylesheets to use from the markdown-pdf
-  - If the file does not exist, it will be skipped
-  - All `\` need to be written as `\\` (Windows)
-
-```javascript
-"markdown-pdf.styles": [
-  "C:\\Users\\<USERNAME>\\Documents\\markdown-pdf.css",
-  "/home/<USERNAME>/settings/markdown-pdf.css",
-],
-```
-
-  - Relative path
-    - If you open the `Markdown file`, it will be interpreted as a relative path from the file
-    - If you open a `folder`, it will be interpreted as a relative path from the root folder
-    - If you open the `workspace`, it will be interpreted as a relative path from the each root folder
-      - See [Multi-root Workspaces](https://code.visualstudio.com/docs/editor/multi-root-workspaces)
-
-```javascript
-"markdown-pdf.styles": [
-  "markdown-pdf.css",
-],
-```
-
-  - Relative path (home directory)
-    - If path starts with `~`, it will be interpreted as a relative path from the home directory
-
-```javascript
-"markdown-pdf.styles": [
-  "~/.config/Code/User/markdown-pdf.css"
-],
-```
-
-  - Online CSS (https://xxx/xxx.css) is applied correctly for JPG and PNG, but problems occur with PDF [#67](https://github.com/yzane/vscode-markdown-pdf/issues/67)
-
-```javascript
-"markdown-pdf.styles": [
-  "https://xxx/markdown-pdf.css"
-],
-```
-
-#### `markdown-pdf.stylesRelativePathFile`
-
-  - If `markdown-pdf.stylesRelativePathFile` option is set to `true`, the relative path set with [markdown-pdf.styles](#markdown-pdfstyles) is interpreted as relative from the file
-  - It can be used to avoid relative paths from folders and workspaces
-  - boolean. Default: false
-
-#### `markdown-pdf.includeDefaultStyles`
-  - Enable the inclusion of default Markdown styles (VSCode, markdown-pdf)
-  - boolean. Default: true
-
-### Syntax highlight options
-
-#### `markdown-pdf.highlight`
-  - Enable Syntax highlighting
-  - boolean. Default: true
-
-#### `markdown-pdf.highlightStyle`
-  - Set the style file name. for example: github.css, monokai.css ...
-  - [file name list](https://github.com/isagalaev/highlight.js/tree/master/src/styles)
-  - demo site : https://highlightjs.org/static/demo/
-
-```javascript
-"markdown-pdf.highlightStyle": "github.css",
-```
-
-### Markdown options
-
-#### `markdown-pdf.breaks`
-  - Enable line breaks
-  - boolean. Default: false
-
-### Emoji options
-
-#### `markdown-pdf.emoji`
-  - Enable emoji. [EMOJI CHEAT SHEET](https://www.webpagefx.com/tools/emoji-cheat-sheet/)
-  - boolean. Default: true
-
-### Configuration options
-
-#### `markdown-pdf.executablePath`
-  - Path to a Chromium or Chrome executable to run instead of the bundled Chromium
-  - All `\` need to be written as `\\` (Windows)
-  - To apply the settings, you need to restart Visual Studio Code
-
-```javascript
-"markdown-pdf.executablePath": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
-```
-
-### Common Options
-
-#### `markdown-pdf.scale`
-  - Scale of the page rendering
-  - number. default: 1
-
-```javascript
-"markdown-pdf.scale": 1
-```
-
-### PDF options
-
-  - pdf only. [puppeteer page.pdf options](https://github.com/puppeteer/puppeteer/blob/main/docs/api/puppeteer.pdfoptions.md)
-
-#### `markdown-pdf.displayHeaderFooter`
-  - Enables header and footer display
-  - boolean. Default: true
-  - Activating this option will display both the header and footer
-  - If you wish to display only one of them, remove the value for the other
-  - To hide the header
-    ```javascript
-    "markdown-pdf.headerTemplate": "",
-    ```
-  - To hide the footer
-    ```javascript
-    "markdown-pdf.footerTemplate": "",
-    ```
-
-#### `markdown-pdf.headerTemplate`
-  - Specifies the HTML template for outputting the header
-  - To use this option, you must set `markdown-pdf.displayHeaderFooter` to `true`
-  - `<span class='date'></span>` : formatted print date. The format depends on the environment
-  - `<span class='title'></span>` : markdown file name
-  - `<span class='url'></span>` : markdown full path name
-  - `<span class='pageNumber'></span>` : current page number
-  - `<span class='totalPages'></span>` : total pages in the document
-  - `%%ISO-DATETIME%%` : current date and time in ISO-based format (`YYYY-MM-DD hh:mm:ss`)
-  - `%%ISO-DATE%%` : current date in ISO-based format (`YYYY-MM-DD`)
-  - `%%ISO-TIME%%` : current time in ISO-based format (`hh:mm:ss`)
-  - Default (version 1.5.0 and later): Displays the Markdown file name and the date using `%%ISO-DATE%%`
-    ```javascript
-    "markdown-pdf.headerTemplate": "<div style=\"font-size: 9px; margin-left: 1cm;\"> <span class='title'></span></div> <div style=\"font-size: 9px; margin-left: auto; margin-right: 1cm; \">%%ISO-DATE%%</div>",
-    ```
-  - Default (version 1.4.4 and earlier): Displays the Markdown file name and the date using `<span class='date'></span>`
-    ```javascript
-    "markdown-pdf.headerTemplate": "<div style=\"font-size: 9px; margin-left: 1cm;\"> <span class='title'></span></div> <div style=\"font-size: 9px; margin-left: auto; margin-right: 1cm; \"> <span class='date'></span></div>",
-    ```
-
-#### `markdown-pdf.footerTemplate`
-  - Specifies the HTML template for outputting the footer
-  - For more details, refer to [markdown-pdf.headerTemplate](#markdown-pdfheadertemplate)
-  - Default: Displays the {current page number} / {total pages in the document}
-    ```javascript
-    "markdown-pdf.footerTemplate": "<div style=\"font-size: 9px; margin: 0 auto;\"> <span class='pageNumber'></span> / <span class='totalPages'></span></div>",
-    ```
-
-#### `markdown-pdf.printBackground`
-  - Print background graphics
-  - boolean. Default: true
-
-#### `markdown-pdf.orientation`
-  - Paper orientation
-  - portrait or landscape
-  - Default: portrait
-
-#### `markdown-pdf.pageRanges`
-  - Paper ranges to print, e.g., '1-5, 8, 11-13'
-  - Default: all pages
-
-```javascript
-"markdown-pdf.pageRanges": "1,4-",
-```
-
-#### `markdown-pdf.format`
-  - Paper format
-  - Letter, Legal, Tabloid, Ledger, A0, A1, A2, A3, A4, A5, A6
-  - Default: A4
-
-```javascript
-"markdown-pdf.format": "A4",
-```
-
-#### `markdown-pdf.width`
-#### `markdown-pdf.height`
-  - Paper width / height, accepts values labeled with units(mm, cm, in, px)
-  - If it is set, it overrides the markdown-pdf.format option
-
-```javascript
-"markdown-pdf.width": "10cm",
-"markdown-pdf.height": "20cm",
-```
-
-#### `markdown-pdf.margin.top`
-#### `markdown-pdf.margin.bottom`
-#### `markdown-pdf.margin.right`
-#### `markdown-pdf.margin.left`
-  - Paper margins.units(mm, cm, in, px)
-
-```javascript
-"markdown-pdf.margin.top": "1.5cm",
-"markdown-pdf.margin.bottom": "1cm",
-"markdown-pdf.margin.right": "1cm",
-"markdown-pdf.margin.left": "1cm",
-```
-
-### markdown-it-include options
-
-#### `markdown-pdf.markdown-it-include.enable`
-  - Enable markdown-it-include.
-  - boolean. Default: true
-
-<div class="page"/>
-
-## FAQ
-
-### How can I change emoji size ?
-
-1. Add the following to your stylesheet which was specified in the markdown-pdf.styles
-
-```css
-.emoji {
-  height: 2em;
-}
-```
-
-### Auto guess encoding of files
-
-Using `files.autoGuessEncoding` option of the Visual Studio Code is useful because it automatically guesses the character code. See [files.autoGuessEncoding](https://code.visualstudio.com/updates/v1_11#_auto-guess-encoding-of-files)
-
-```javascript
-"files.autoGuessEncoding": true,
-```
-
-### Output directory
-
-If you always want to output to the relative path directory from the Markdown file.
-
-For example, to output to the "output" directory in the same directory as the Markdown file, set it as follows.
-
-```javascript
-"markdown-pdf.outputDirectory" : "output",
-"markdown-pdf.outputDirectoryRelativePathFile": true,
-```
-
-### Page Break
-
-Please use the following to insert a page break.
-
-``` html
+```html
 <div class="page"/>
 ```
 
-<div class="page"/>
+## Known Limitations
 
-## Known Issues
+- Chrome or Chromium must be installed separately. The extension does not bundle or download a browser.
+- Online CSS URLs (e.g., `https://example.com/styles.css`) may not resolve correctly in PDF output. Prefer local stylesheet paths.
+- PNG and JPEG export are not available. These were removed in v2.
+- PlantUML diagrams are not supported. PlantUML was removed in v2. Use Mermaid as a replacement.
 
-### `markdown-pdf.styles` option
-* Online CSS (https://xxx/xxx.css) may cause problems with PDF output. Prefer local stylesheets. [#67](https://github.com/yzane/vscode-markdown-pdf/issues/67)
+## Credits
 
+This extension is a fork of [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-markdown-pdf).
 
-## [Release Notes](CHANGELOG.md)
+Libraries:
 
-### 1.5.0 (2023/09/08)
-* Improve: The default date format for headers and footers has been changed to the ISO-based format (YYYY-MM-DD).
-  * Support different date formats in templates [#197](https://github.com/yzane/vscode-markdown-pdf/pull/197)
-* Improve: Avoid TimeoutError: Navigation timeout of 30000 ms exceeded and TimeoutError: waiting for Page.printToPDF failed: timeout 30000ms exceeded [#266](https://github.com/yzane/vscode-markdown-pdf/pull/266)
-* Fix: Fix description of outputDirectoryRelativePathFile [#238](https://github.com/yzane/vscode-markdown-pdf/pull/238)
-* README
-  * Add: Specification Changes
-  * Fix: Broken link
+- [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)
+- [markdown-it/markdown-it](https://github.com/markdown-it/markdown-it)
+- [mcecot/markdown-it-checkbox](https://github.com/mcecot/markdown-it-checkbox)
+- [valeriangalliat/markdown-it-anchor](https://github.com/valeriangalliat/markdown-it-anchor)
+- [markdown-it/markdown-it-emoji](https://github.com/markdown-it/markdown-it-emoji)
+- [isagalaev/highlight.js](https://github.com/isagalaev/highlight.js)
+- [cheeriojs/cheerio](https://github.com/cheeriojs/cheerio)
+- [janl/mustache.js](https://github.com/janl/mustache.js)
+- [markdown-it/markdown-it-container](https://github.com/markdown-it/markdown-it-container)
+- [camelaissani/markdown-it-include](https://github.com/camelaissani/markdown-it-include)
+- [mermaid-js/mermaid](https://github.com/mermaid-js/mermaid)
+- [KaTeX/KaTeX](https://github.com/KaTeX/KaTeX)
+- [cure53/DOMPurify](https://github.com/cure53/DOMPurify)
+- [jonschlinkert/gray-matter](https://github.com/jonschlinkert/gray-matter)
+
+and
+
+- [cakebake/markdown-themeable-pdf](https://github.com/cakebake/markdown-themeable-pdf)
 
 ## License
 
 MIT
-
-
-## Special thanks
-* [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)
-* [markdown-it/markdown-it](https://github.com/markdown-it/markdown-it)
-* [mcecot/markdown-it-checkbox](https://github.com/mcecot/markdown-it-checkbox)
-* [valeriangalliat/markdown-it-anchor](https://github.com/valeriangalliat/markdown-it-anchor)
-* [markdown-it/markdown-it-emoji](https://github.com/markdown-it/markdown-it-emoji)
-* [isagalaev/highlight.js](https://github.com/isagalaev/highlight.js)
-* [cheeriojs/cheerio](https://github.com/cheeriojs/cheerio)
-* [janl/mustache.js](https://github.com/janl/mustache.js)
-* [markdown-it/markdown-it-container](https://github.com/markdown-it/markdown-it-container)
-* [camelaissani/markdown-it-include](https://github.com/camelaissani/markdown-it-include)
-* [mermaid-js/mermaid](https://github.com/mermaid-js/mermaid)
-* [KaTeX/KaTeX](https://github.com/KaTeX/KaTeX)
-* [cure53/DOMPurify](https://github.com/cure53/DOMPurify)
-* [jonschlinkert/gray-matter](https://github.com/jonschlinkert/gray-matter)
-
-and
-
-* [cakebake/markdown-themeable-pdf](https://github.com/cakebake/markdown-themeable-pdf)
