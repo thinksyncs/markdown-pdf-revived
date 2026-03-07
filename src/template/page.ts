@@ -75,10 +75,10 @@ export function readStyles(uri: vscode.Uri): string {
   }
 }
 
-export function makeHtml(content: string, uri: vscode.Uri): string | null {
+export function makeHtml(content: string, uri: vscode.Uri, frontmatterTitle?: string): string | null {
   try {
     const style = readStyles(uri);
-    const title = path.basename(uri.fsPath);
+    const title = frontmatterTitle ?? path.basename(uri.fsPath);
     const templatePath = path.join(EXTENSION_ROOT, 'template', 'template.html');
     const template = readFile(templatePath) as string;
     const mermaidPath = path.join(EXTENSION_ROOT, 'node_modules', 'mermaid', 'dist', 'mermaid.min.js');

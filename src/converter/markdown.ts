@@ -33,7 +33,12 @@ function convertImgPath(src: string, filename: string): string {
   }
 }
 
-export function convertMarkdownToHtml(filename: string, type: string, text: string): string | undefined {
+export interface ConvertResult {
+  html: string;
+  title?: string;  // from YAML frontmatter, if present
+}
+
+export function convertMarkdownToHtml(filename: string, type: string, text: string): ConvertResult | undefined {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const grayMatter = require('gray-matter') as (s: string) => { data: Record<string, unknown>; content: string };
   const matterParts = grayMatter(text);
@@ -149,7 +154,12 @@ export function convertMarkdownToHtml(filename: string, type: string, text: stri
       });
 
       statusbarMessage.dispose();
-      return md.render(matterParts.content);
+      return {
+        html: md.render(matterParts.content),
+        title: (typeof matterParts.data['title'] === 'string' && matterParts.data['title'].trim() !== '')
+          ? (matterParts.data['title'] as string).trim()
+          : undefined,
+      };
 
     } catch (error) {
       statusbarMessage?.dispose();

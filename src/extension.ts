@@ -69,14 +69,14 @@ async function markdownPdf(optionType: OptionType): Promise<void> {
     for (const type of types) {
       const outputFilename = mdfilename.replace(ext, '.' + type);
       const text = editor.document.getText();
-      const mdHtml = convertMarkdownToHtml(mdfilename, type, text);
-      if (!mdHtml) return;
-      const sanitized = sanitizeContent(mdHtml);
+      const result = convertMarkdownToHtml(mdfilename, type, text);
+      if (!result) return;
+      const sanitized = sanitizeContent(result.html);
       if (sanitized === null) {
         showErrorMessage('makeHtml(): Aborting export — content could not be sanitized.');
         return;
       }
-      const html = makeHtml(sanitized, uri);
+      const html = makeHtml(sanitized, uri, result.title);
       if (!html) return;
       await exportPdf(html, outputFilename, type, uri);
     }
