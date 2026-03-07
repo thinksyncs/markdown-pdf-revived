@@ -3,7 +3,7 @@
 **Project:** Modernize abandoned vscode-markdown-pdf extension
 **Tagline:** A privacy-first, offline-capable Markdown to PDF converter for VSCode
 **Started:** 7 March 2026
-**Status:** Phase 4 Documentation Complete — ready for manual testing
+**Status:** Phase 4 Complete — manual testing in progress
 **Last Updated:** 7 March 2026
 
 ---
@@ -416,13 +416,30 @@
 - [x] Update `package.json` activation events
 - [x] Update `package.json` VSCode engine version
 
-### 4.5 Create Visual Assets (Optional)
+### 4.5 Create Visual Assets ✅ COMPLETE
 
-- [ ] Design extension icon (128x128px)
-- [ ] Design marketplace banner (1280x640px)
-- [ ] Create screenshots for marketplace
-- [ ] Add icon to `package.json`
-- [ ] Add banner to `package.json`
+- [x] Design extension icon (128x128px) — generated via Nano Banana, saved to images/icon.png
+- [x] Design marketplace banner (1280x640px) — generated via Nano Banana, saved to images/banner.png
+- [x] Add icon to `package.json`
+- [x] Add banner to `package.json` (galleryBanner color #111827 dark)
+- [ ] Verify visual assets display correctly on marketplace (post-publish)
+
+### 4.5b esbuild Bundling — .vsix Size Reduction ✅ COMPLETE
+
+- [x] Bundle pure-JS deps into `dist/extension.js` (remove from external list)
+- [x] Update `.vscodeignore` — exclude node_modules, re-include runtime file assets only
+- [x] Repackage and verify: 60MB → 16MB (73% reduction)
+
+### 4.5c Community Issue Fixes ✅ COMPLETE
+
+- [x] #103 — Restore inline code colour (CSS fix)
+- [x] #193 — Use frontmatter `title:` in PDF header/footer
+- [x] #210 — Verify `%%ISO-DATE%%` token (already working)
+- [x] #126 — Resolve CSS paths relative to .md file
+- [x] #75 — Inject user CSS into PDF header/footer context
+- [x] #131 — Add footnote support (`markdown-it-footnote`)
+- [x] #364 — GitHub-style callout blocks (`> [!NOTE]` etc.)
+- [x] #189 — Add `markdown-pdf.timeout` setting (default 60000ms)
 
 ### 4.6 Final Testing
 
@@ -515,9 +532,11 @@ Create and maintain these test files:
 - [ ] `math.md` - LaTeX equations (KaTeX test)
 - [ ] `mermaid.md` - Mermaid diagrams (all types)
 - [ ] `emoji.md` - Emoji rendering
-- [ ] `frontmatter.md` - YAML front matter
+- [ ] `frontmatter.md` - YAML front matter (verify title appears in PDF header)
+- [ ] `footnotes.md` - Footnote syntax `[^1]`
+- [ ] `callouts.md` - GitHub-style callout blocks (`> [!NOTE]`, all 5 types)
 - [ ] `includes.md` - File includes
-- [ ] `long-document.md` - 50+ pages (pagination test)
+- [ ] `long-document.md` - 50+ pages (pagination test, timeout setting)
 
 **For each test document:**
 - [ ] PDF export works
@@ -580,11 +599,11 @@ Create and maintain these test files:
 9. **esbuild** - Fast builds, simple configuration, small bundles (Phase 2)
 10. **Privacy-first** - No external servers, no telemetry, no CDN dependencies
 
-### Open Questions
+### Open Questions (Resolved)
 
-1. Extension name: `Markdown PDF (Revived)` or different?
-2. Publisher name: Use personal GitHub account or organization?
-3. Icon/banner: Design custom or use modified original?
+1. Extension name: "Markdown PDF" — no suffix. Name the product, not its history.
+2. Publisher name: AUAggy (personal GitHub account).
+3. Icon/banner: Original artwork generated via Nano Banana — same visual language, different execution.
 
 ### Risks & Mitigations
 

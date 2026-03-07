@@ -20,7 +20,7 @@ This is a fork of [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-ma
 
 **Removed:** PlantUML (sent source to plantuml.com), PNG/JPEG export, Chromium auto-download, 10 settings.
 
-**Added:** KaTeX math, DOMPurify sanitization (CVE-2024-7739), Mermaid async render fix, TypeScript rewrite, esbuild bundling (extension package: ~16MB, down from 60MB).
+**Added:** KaTeX math, DOMPurify sanitization (CVE-2024-7739), Mermaid async render fix, TypeScript rewrite, esbuild bundling (~16MB, down from 60MB), footnotes, GitHub-style callouts, configurable export timeout.
 
 **Changed:** Default margins, highlight theme (github.css), header/footer off by default.
 
@@ -118,7 +118,7 @@ Header and footer templates support these tokens:
 
 | Token | Value |
 |---|---|
-| `<span class='title'></span>` | Markdown filename |
+| `<span class='title'></span>` | Document title (frontmatter `title:` if set, otherwise filename) |
 | `<span class='pageNumber'></span>` | Current page number |
 | `<span class='totalPages'></span>` | Total pages |
 | `%%ISO-DATE%%` | Date in `YYYY-MM-DD` format |

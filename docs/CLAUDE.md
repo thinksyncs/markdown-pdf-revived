@@ -288,8 +288,10 @@ The block rule had `if (max - pos < 4 ...)` guard (minimum `$$x$$` is 6 chars bu
 | 4.2 Migration Guide | Complete | feature/phase-3-cleanup |
 | 4.3 Changelog | Complete | feature/phase-3-cleanup |
 | 4.4 Package Metadata | Complete | feature/phase-3-cleanup |
-| 4.5 Visual Assets | Not Started | — |
-| 4.6 Final Testing | Not Started | — |
+| 4.5 Visual Assets | Complete | feature/phase-3-cleanup |
+| 4.5b esbuild bundling / size reduction | Complete | feature/phase-3-cleanup |
+| 4.5c Community issue fixes (8 issues) | Complete | feature/phase-3-cleanup |
+| 4.6 Final Testing | In Progress | — |
 | 4.7–4.10 Package/Publish/Announce | Not Started | — |
 
 ---
@@ -320,6 +322,68 @@ The block rule had `if (max - pos < 4 ...)` guard (minimum `$$x$$` is 6 chars bu
 
 ---
 
+---
+
+### Session 6: 7 March 2026 — esbuild Bundling Fix (Package Size Reduction)
+
+**Status:** Complete
+
+#### Problem
+The .vsix was 60MB because esbuild.js marked all 18 production deps as `external`, causing the full `node_modules/` to ship with the extension.
+
+#### Solution
+- **esbuild.js**: Removed all pure-JS deps from `external` list. Now only `vscode`, `puppeteer-core`, and `canvas` (optional native jsdom addon) are external.
+- **.vscodeignore**: Added `node_modules/**` to exclude all of node_modules, then used negation patterns to re-include only runtime file assets:
+  - `!node_modules/puppeteer-core/**` and its transitive deps (chromium-bidi, devtools-protocol, tldts, zod, @puppeteer/*)
+  - `!node_modules/mermaid/dist/mermaid.min.js`
+  - `!node_modules/katex/dist/katex.min.css` and `!node_modules/katex/dist/fonts/**`
+  - `!node_modules/highlight.js/styles/**`
+  - `!node_modules/emoji-images/pngs/**`
+
+#### Result
+- dist/extension.js: 13.1MB (all pure-JS deps bundled in)
+- .vsix: ~16MB (down from 60MB; 73% reduction)
+- puppeteer-core + chromium-bidi account for ~20MB uncompressed (unavoidable — runtime launcher)
+
+#### Notes
+- esbuild warning about `xhr-sync-worker.js` in jsdom is harmless — that code path (sync XHR) is never triggered
+- `--no-dependencies` flag to vsce must NOT be used — it bypasses the `.vscodeignore` negation patterns
+- README.md and CHANGELOG.md updated to reflect the size reduction
+
+---
+
+---
+
+### Session 7: 7 March 2026 — Community Issue Fixes (8 issues)
+
+**Status:** Complete
+
+#### Issues Fixed
+
+| Issue | Fix | Commit |
+|---|---|---|
+| #103 Inline code colour washed out | CSS rules in markdown.css | `949a9d9` |
+| #193 Frontmatter title not in header | `ConvertResult` interface; thread title to `<title>` | `71a711b` |
+| #210 Date format in header | Already working via `%%ISO-DATE%%` token | — |
+| #126 Relative CSS paths fail | `resolveStylePath()` helper: .md dir first, workspace root fallback | `d25fb8f` |
+| #75 User CSS not in header/footer | `readUserStylesAsText()` + prepend `<style>` block to templates | `1d27d8b` |
+| #131 No footnote support | `markdown-it-footnote` plugin + CSS | `8c5a494` |
+| #364 GitHub callout blocks | Post-render cheerio transform + CSS | `c4b452a` |
+| #189 Navigation timeout on large docs | `markdown-pdf.timeout` setting (default 60000ms) | `66a3e3a` |
+
+#### Architecture Notes
+- `ConvertResult` interface exported from `src/converter/markdown.ts` — callers now use `.html` and `.title`
+- `resolveStylePath()` exported from `src/template/page.ts` — shared by `readStyles()` and `readUserStylesAsText()`
+- `transformCallouts()` runs as a post-render HTML transform (cheerio); keeps `<blockquote>` element, adds class and `data-callout`
+- Empty-string and whitespace-only frontmatter titles fall back to filename (`.trim() !== ''` guard)
+- `markdown-pdf.timeout` replaces all three hardcoded timeouts in pdf.ts: `page.goto()`, `page.waitForFunction()`, `page.pdf()`
+
+#### Quality Gates (per task)
+- Each task: spec compliance review + code quality review by fresh subagents
+- Issues caught in review: empty-string title edge case (#193), misleading comment in callout transform (#364), redundant `pre > code` rule (#103)
+
+---
+
 **Last Updated:** 7 March 2026
-**Current Phase:** Phase 4 Documentation Complete
-**Next Phase:** 4.5 — Visual assets; 4.6 — Manual testing before publish
+**Current Phase:** 4.6 — Manual testing on second workstation
+**Next Phase:** 4.7–4.10 — Package, publish, announce
