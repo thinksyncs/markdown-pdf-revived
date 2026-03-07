@@ -5,6 +5,7 @@ dist/
 work/**
 *.vsix
 *.bat
+docs/
 .eslintrc.json
 .DS_Store
 test-docs/*.pdf
