@@ -1,8 +1,9 @@
 import * as os from 'os';
 import * as path from 'path';
+import * as fs from 'fs';
 import * as vscode from 'vscode';
 import { config } from '../config/settings';
-import { isExistsPath, deleteFile } from '../utils/file';
+import { isExistsPath } from '../utils/file';
 import { showErrorMessage } from '../utils/logger';
 import { exportHtml } from './html';
 import { getOutputDir, readUserStylesAsText } from '../template/page';
@@ -83,6 +84,7 @@ export async function exportPdf(
   return vscode.window.withProgress(
     { location: vscode.ProgressLocation.Notification, title: `[Markdown PDF]: Exporting (${type}) ...` },
     async () => {
+      let tempDir: string | undefined;
       try {
         if (type === 'html') {
           exportHtml(data, exportFilename);
@@ -93,14 +95,12 @@ export async function exportPdf(
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         const puppeteer = require('puppeteer-core') as typeof import('puppeteer-core');
         const f = path.parse(filename);
-        // On Windows, files on the WSL filesystem have UNC paths (\\wsl.localhost\...).
-        // Chrome blocks file:// access to UNC paths. Write the temp file to the
-        // system temp directory instead, which is always on a regular Windows path.
-        const tmpDir = (process.platform === 'win32' && f.dir.startsWith('\\\\'))
-          ? os.tmpdir()
-          : f.dir;
-        const tmpfilename = path.join(tmpDir, f.name + '_tmp.html');
-        exportHtml(data, tmpfilename);
+        // Always stage in a unique temp directory to avoid predictable filenames
+        // and symlink-traversal issues when writing temporary HTML.
+        const tempParent = os.tmpdir();
+        tempDir = fs.mkdtempSync(path.join(tempParent, 'markdown-pdf-'));
+        const tmpfilename = path.join(tempDir, `${f.name}.html`);
+        fs.writeFileSync(tmpfilename, data, { encoding: 'utf8', flag: 'wx' });
 
         // Resolve Chrome: user setting → auto-detected system Chrome
         let execPath = config.executablePath();
@@ -150,13 +150,13 @@ export async function exportPdf(
 
         await browser.close();
 
-        if (isExistsPath(tmpfilename)) {
-          deleteFile(tmpfilename);
-        }
-
         vscode.window.setStatusBarMessage('$(markdown) ' + exportFilename, 10000);
       } catch (error) {
         showErrorMessage('exportPdf()', error);
+      } finally {
+        if (tempDir) {
+          fs.rmSync(tempDir, { recursive: true, force: true });
+        }
       }
     }
   );
