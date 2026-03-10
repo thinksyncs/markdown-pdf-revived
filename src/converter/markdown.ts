@@ -1,32 +1,99 @@
 import * as path from 'path';
 import * as url from 'url';
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 import { EXTENSION_ROOT, config } from '../config/settings';
 import { readFile } from '../utils/file';
 import { showErrorMessage, setBooleanValue } from '../utils/logger';
 import { slug } from './slug';
 import { markdownItKaTeX } from './katex';
 
-function convertImgPath(src: string, filename: string): string {
-  try {
-    let href = decodeURIComponent(src)
-      .replace(/("|')/g, '')
-      .replace(/\\/g, '/')
-      .replace(/#/g, '%23');
-    const protocol = url.parse(href).protocol;
-    if (protocol === 'file:' && !href.startsWith('file:///')) {
-      return href.replace(/^file:\/\//, 'file:///');
-    } else if (protocol === 'file:') {
-      return href;
-    } else if (!protocol || path.isAbsolute(href)) {
-      href = path.resolve(path.dirname(filename), href)
-        .replace(/\\/g, '/')
-        .replace(/#/g, '%23');
-      if (href.startsWith('//')) return 'file:' + href;
-      if (href.startsWith('/')) return 'file://' + href;
-      return 'file:///' + href;
+const INCLUDE_RE = /:\[[^\]]+\]\(([^)]+)\)/g;
+const MAX_INCLUDE_DEPTH = 10;
+
+function getAllowedRoot(filename: string): string {
+  const resource = vscode.Uri.file(filename);
+  const workspace = vscode.workspace.getWorkspaceFolder(resource);
+  return workspace?.uri.fsPath ?? path.dirname(filename);
+}
+
+function isPathWithinRoot(candidatePath: string, allowedRoot: string): boolean {
+  const rel = path.relative(path.resolve(allowedRoot), path.resolve(candidatePath));
+  return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel));
+}
+
+function resolveLocalPath(href: string, filename: string, allowedRoot: string): string | undefined {
+  const cleaned = decodeURIComponent(href)
+    .replace(/("|')/g, '')
+    .replace(/\\/g, '/');
+  const protocol = url.parse(cleaned).protocol;
+
+  if (protocol && protocol !== 'file:') {
+    return undefined;
+  }
+
+  let resolvedPath: string;
+  if (protocol === 'file:') {
+    resolvedPath = vscode.Uri.parse(cleaned).fsPath;
+  } else if (path.isAbsolute(cleaned)) {
+    resolvedPath = cleaned;
+  } else {
+    resolvedPath = path.resolve(path.dirname(filename), cleaned);
+  }
+
+  if (!isPathWithinRoot(resolvedPath, allowedRoot)) {
+    return undefined;
+  }
+
+  return resolvedPath;
+}
+
+function inlineIncludesSecure(markdown: string, filename: string, allowedRoot: string, depth = 0, seen = new Set<string>()): string {
+  if (depth > MAX_INCLUDE_DEPTH) {
+    showErrorMessage('inlineIncludesSecure(): include nesting too deep; skipping nested include.');
+    return markdown;
+  }
+
+  return markdown.replace(INCLUDE_RE, (_match: string, includeTarget: string) => {
+    try {
+      const includePath = resolveLocalPath(includeTarget, filename, allowedRoot);
+      if (!includePath) {
+        showErrorMessage(`inlineIncludesSecure(): blocked include outside allowed root: ${includeTarget}`);
+        return '';
+      }
+      if (seen.has(includePath)) {
+        showErrorMessage(`inlineIncludesSecure(): circular include detected: ${includeTarget}`);
+        return '';
+      }
+      if (!fs.existsSync(includePath) || !fs.statSync(includePath).isFile()) {
+        return '';
+      }
+
+      const included = readFile(includePath) as string;
+      const nextSeen = new Set(seen);
+      nextSeen.add(includePath);
+      return inlineIncludesSecure(included, includePath, allowedRoot, depth + 1, nextSeen);
+    } catch (error) {
+      showErrorMessage('inlineIncludesSecure()', error);
+      return '';
     }
-    return src;
+  });
+}
+
+function convertImgPath(src: string, filename: string, allowedRoot: string): string {
+  try {
+    const resolved = resolveLocalPath(src, filename, allowedRoot);
+    const protocol = url.parse(src).protocol;
+
+    if (protocol && protocol !== 'file:') {
+      return src;
+    }
+    if (!resolved) {
+      showErrorMessage(`convertImgPath(): blocked image path outside allowed root: ${src}`);
+      return '';
+    }
+
+    return vscode.Uri.file(resolved).toString().replace(/#/g, '%23');
   } catch (error) {
     showErrorMessage('convertImgPath()', error);
     return src;
@@ -66,6 +133,8 @@ export function convertMarkdownToHtml(filename: string, type: string, text: stri
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const grayMatter = require('gray-matter') as (s: string) => { data: Record<string, unknown>; content: string };
   const matterParts = grayMatter(text);
+  const allowedRoot = getAllowedRoot(filename);
+  const markdownContent = inlineIncludesSecure(matterParts.content, filename, allowedRoot);
 
   let statusbarMessage: vscode.Disposable | undefined;
   try {
@@ -111,7 +180,7 @@ export function convertMarkdownToHtml(filename: string, type: string, text: stri
         if (type === 'html') {
           href = decodeURIComponent(href).replace(/("|')/g, '');
         } else {
-          href = convertImgPath(href, filename);
+          href = convertImgPath(href, filename, allowedRoot);
         }
         token.attrs[token.attrIndex('src')][1] = href;
         return defaultRender ? defaultRender(tokens, idx, options, env, self) : self.renderToken(tokens, idx, options) as string;
@@ -125,7 +194,7 @@ export function convertMarkdownToHtml(filename: string, type: string, text: stri
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
       $('img').each(function (_i: number, elem: any) {
             const src = $(elem).attr('src') ?? '';
-            $(elem).attr('src', convertImgPath(src, filename));
+            $(elem).attr('src', convertImgPath(src, filename, allowedRoot));
           });
           return $.html();
         };
@@ -174,15 +243,9 @@ export function convertMarkdownToHtml(filename: string, type: string, text: stri
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       md.use(require('markdown-it-footnote'));
 
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      md.use(require('markdown-it-include'), {
-        root: path.dirname(filename),
-        includeRe: /:\[.+\]\((.+\..+)\)/i,
-      });
-
       statusbarMessage.dispose();
       return {
-        html: transformCallouts(md.render(matterParts.content)),
+        html: transformCallouts(md.render(markdownContent)),
         title: (typeof matterParts.data['title'] === 'string' && matterParts.data['title'].trim() !== '')
           ? (matterParts.data['title'] as string).trim()
           : undefined,
