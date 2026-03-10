@@ -21,6 +21,8 @@
 
 Converts Markdown files to PDF or HTML from within VSCode. All rendering is local; no external servers, no telemetry, Chrome required.
 
+> Note: This repository may be distributed as an unofficial fork build via GitHub-hosted `.vsix` files. Unless explicitly stated otherwise, GitHub releases from this fork are separate from the upstream Marketplace/Open VSX distribution.
+
 ## What Changed in v2
 
 This is a fork of [yzane/vscode-markdown-pdf](https://github.com/yzane/vscode-markdown-pdf), which had no maintainer activity since late 2023. See [CHANGELOG.md](CHANGELOG.md) for the full list of changes and [MIGRATION.md](MIGRATION.md) for upgrade instructions.

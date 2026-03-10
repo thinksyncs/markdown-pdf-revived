@@ -2,7 +2,7 @@
   "name": "markdown-pdf-revived",
   "displayName": "Markdown PDF (Revived)",
   "description": "Markdown to PDF/HTML converter. Local rendering, no external servers, Chrome required.",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "publisher": "AUAggy",
   "author": "AUAggy",
   "icon": "images/icon.png",
@@ -354,7 +354,7 @@
     "vscode:prepublish": "node esbuild.js",
     "build": "node esbuild.js",
     "watch": "node esbuild.js --watch",
-    "test": "node ./test/runTest.js"
+    "test": "npm run build"
   },
   "devDependencies": {
     "@types/markdown-it-footnote": "^3.0.4",

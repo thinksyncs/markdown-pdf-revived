@@ -4,6 +4,18 @@ All notable changes are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning: [Semantic Versioning](https://semver.org/).
 
+## [2.0.2] - 2026-03-10
+
+### Added
+- GitHub Actions release workflow that packages the extension into a `.vsix`
+  and attaches it to a GitHub Release when a `v*` tag is pushed
+
+### Changed
+- `npm test` now runs the TypeScript/esbuild build, matching the validation
+  already used in CI
+- README install note now clarifies that GitHub-hosted `.vsix` releases are
+  separate from Marketplace/Open VSX distribution
+
 ## [2.0.0] - 2026-03-07
 
 This release takes over from `yzane.markdown-pdf`, which has had no maintainer
